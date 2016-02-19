@@ -1,7 +1,4 @@
-================================================
-   InterText - parallel text alignment editor
-================================================
-- version 2.2
+# InterText Server
 
 InterText is an on-line editor for aligned parallel texts. It was developed for
 the project InterCorp (http://www.korpus.cz/intercorp/?lang=en) to edit and
@@ -10,8 +7,7 @@ of sentences, but it is designed with flexibility in mind and supports custom
 XML documents and Unicode character set. The software is written in PHP and uses
 MySQL database as back-end.
 
-Features:
----------
+## Features:
 - can manage any number of texts
 - can manage any number of text (language) versions for each text
 - import and export of any valid XML document (see LIMITATIONS & KNOWN ISSUES!)
@@ -48,8 +44,7 @@ alignments
 - synchronization of texts and alignments with external InterText editor clients
 
 
-Technical details on file formats:
-----------------------------------
+## Technical details on file formats:
 - the system expects use of (at most) two place numbered id-attributes for all 
 alignable elements, the separator can be any of : , . - _ characters; their 
 parent elements can be numbered by one placed numbers; prefixes to the 
@@ -83,8 +78,7 @@ values 0 and 1 are known, but for 0 no attribute is generated at all
 separated count of elements linked together by the link (e.g. "1-2")
 
 
-LIMITATIONS & KNOWN ISSUES
---------------------------
+## LIMITATIONS & KNOWN ISSUES
 - the package does not contain the Hunalign nor the TCA2 automatic aligners
 - DOCTYPE, entity definitions and the XML declaration element are not imported
 (preserved) from the XML file (a problem of the PHP XMLReader module); the only
@@ -113,21 +107,23 @@ kept, however
 with texts larger than ca. 30000 elements (this is not a problem of InterText)
 
 
-For more information read:
---------------------------
+## For more information read:
 
 - INSTALL - installation instructions, set-up, customization and other
 administration-related information
 - UPDATE.txt - instructions for update
 - help.php - user-manual, including details on the functions and principles of
 the system
-- ChangeLog.txt - list of changes (added features and fixed bugs)
+- CHANGELOG - list of changes (added features and fixed bugs)
 
+## Acknowledgement:
 
-License:
---------
-This software is licensed under the GNU General Public License v3.
-http://www.gnu.org/licenses/gpl-3.0.html
+This software and documentation was partly supported from the implementation of the Czech National Corpus project (LM2011023) funded by the _Ministry of Education, Youth and Sports_ of the Czech republic within the framework of _Large Research, Development and Innovation Infrastructures_.
 
-Copyright (c) 2010 Pavel Vondřička <Pavel.Vondricka@ff.cuni.cz>
+## License:
+
+This software is licensed under the GNU General Public License v3. (http://www.gnu.org/licenses/gpl-3.0.html)
+
+- Copyright (c) 2010-2016 Pavel Vondřička
+- Copyright (c) 2010-2016 Charles University in Prague, Faculty of Arts, Institute of the Czech National Corpus
 

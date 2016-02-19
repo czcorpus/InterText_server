@@ -1,0 +1,36 @@
+-> version 2.2
+==============
+
+- you need EITHER to have MySQL version >= 5.6 OR to turn off fulltext searches
+explicitly by inserting '$DISABLE_FULLTEXT = true;' into your config.php - 
+this must be decided/solved FIRST OF ALL!
+- it is highly suggested to use the option innodb_file_per_table in your 
+MySQL configuration (usually in /etc/mysql/my.cnf, see the database 
+documentation)
+- ensure that you have no upper size limit set for the main tablespace 
+in innodb_data_file_path and that you have enough space available on your disk;
+the file may grow by several gigabytes even when using
+innodb_file_per_table and if it hits a size limit, you may get into troubles with
+the conversion process (below); the database will also grow significantly in
+size after conversion
+- in order to make the new transaction support effective on existing data,
+you need to run the script 'update-2.2.php', which will convert all
+existing tables into the InnoDB format (and remove fulltext indexes if 
+fulltext is disabled in config.php) - this conversion is NOT neccessary for
+InterText to run, but until you convert the tables, the transactions will 
+silently be ineffective for all texts existing before the update 
+(and even for newly added translations of those texts!) - this conversion should
+in theory be safe to do on a running system, but making back-ups before any 
+change is always highly recommended!
+
+version 1.7 -> version 2.0
+==========================
+- before updating, the database must be updated by running the
+'update-2.0.php' script
+- new options need to be added to settings.php
+
+version 1.4 -> version 1.5
+==========================
+- before updating, the database must be updated by running the
+'update-1.5.sql' script in MySQL
+- additional changes in settings.php may apply

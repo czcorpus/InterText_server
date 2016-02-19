@@ -1,0 +1,215 @@
+#!/usr/bin/php
+<?php
+/*  Copyright (c) 2010-2016 Pavel Vondřička (Pavel.Vondricka@korpus.cz)
+ *  Copyright (c) 2010-2016 Charles University in Prague, Faculty of Arts,
+ *                          Institute of the Czech National Corpus
+ *
+ *  This file is part of InterText Server.
+ *
+ *  InterText Server is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  InterText Server is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with InterText Server.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+ini_set('error_reporting', 'E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED');
+
+$CLI_MODE = true;
+$tname='';
+
+array_shift($argv);
+while ($arg = array_shift($argv)) {
+	switch ($arg) {
+	case '-f':
+		$format = array_shift($argv);
+		break;
+	case '-tname':
+		$tname = array_shift($argv);
+		break;
+	case 'aid':
+		$mode = 'aid';
+		$aid = array_shift($argv);
+		if ($format=='') $format='xml';
+		break;
+	case 't1aid':
+		$mode = 't1aid';
+		$aid = array_shift($argv);
+		if ($format=='') $format='xml';
+		break;	
+	case 't2aid':
+		$mode = 't2aid';
+		$aid = array_shift($argv);
+		if ($format=='') $format='xml';
+		break;
+	case 'aname':
+		$mode = 'aname';
+		$tname = array_shift($argv);
+		$v1name = array_shift($argv);
+		$v2name = array_shift($argv);
+		if ($format=='') $format='xml';
+		break;
+	case 'tname':
+		$mode = 'tname';
+		$tname = array_shift($argv);
+		$vname = array_shift($argv);
+		if ($format=='') $format='xml';
+		break;
+	case 'all_closed':
+		$mode = 'all_closed';
+		if ($format=='') $format='xml';
+		break;
+	}
+}
+
+$pwd = preg_replace('/[^\/]*$/','',$_SERVER['PATH_TRANSLATED']);
+require $pwd.'/../settings.php';
+require $pwd.'/../lib_intertext.php';
+
+if ($mode=='' || ($mode=='aname' && ($tname=='' || $v1name=='' || $v2name=='')) || ($mode=='tname' && ($tname=='' || $vname=='')) || (substr($mode,-3)=='aid' && $aid=='')) {
+	print "InterText CLI export utility
+============================
+Tool to export alignments and texts from the InterText system.
+
+Usage:
+
+	export [options] aid <alignment_id>
+	export [options] aname <text_name> <version1_name> <version2_name>
+	export [options] t1aid <alignment_id>
+	export [options] t2aid <alignment_id>
+	export [options] tname <text_name> <version_name>
+	export [options] all_closed
+
+Options:
+
+-f <format>
+	format of the output
+	for alignments: 
+		xml     - XML TEI file with links (plain IDs) [default] 
+		xml:ic  - XML TEI file with links (long IDs for project InterCorp)
+		xml:fn  - XML TEI file with links (long filename-based IDs for project ECPC)
+	for texts:
+		xml          - original XML file (plain IDs) [default]
+		xml:ic       - original XML file (long IDs for project InterCorp)
+		xml:fn       - original XML file (long filename-based IDs for project ECPC)
+		corresp      - original XML file with added 'corresp' attributes on text elements, 
+		               linking the corresponding element IDs from the other version 
+		               (cannot be used in 'tname' mode)
+		segs          - XML file with <seg>ments (ParaConc format)
+
+for all_closed:
+-t <text_name>
+	export only alignments of the given text
+
+Examples:
+
+- export alignment id 34
+
+	export aid 34
+
+- export alignment of text 'Document1', versions 'english' and 'french'
+
+	export aname Document1 english french
+
+- export second text version of alignment id 34
+
+	export t2aid 34
+
+- export text version 'english' of 'Document1'
+
+	export tname Document1 english
+
+- export all closed alignments with the texts into the current directory
+
+	export all_closed
+
+============================
+";
+	exit;
+}
+
+$it = new InterText;
+$res = false;
+
+switch ($mode) {
+case 'aid':
+	$res = $it->export_alignment($aid,$format);
+	break;
+case 'aname':
+	$al = $it->get_alignment_by_name($tname,$v1name,$v2name);
+	if (!$al) $al = $it->get_alignment_by_name($tname,$v2name,$v1name);
+	if ($al) $res = $it->export_alignment($al['id'],$format);
+	break;
+case 't1aid':
+	$al = $it->alignment_info($aid);
+	if (!$al) break;
+	$res = $it->export_document($al['text_id'],$al['ver1_id'],$aid,$format);
+	break;	
+case 't2aid':
+	$al = $it->alignment_info($aid);
+	if (!$al) break;
+	$res = $it->export_document($al['text_id'],$al['ver2_id'],$aid,$format);
+	break;
+case 'tname':
+	$tid = $it->text_id_by_name($tname);
+	if (!$tid) { $_ERROR = "Error: Text not found."; break; }
+	$ver = $it->txtver_info($tid,$vname);
+	if (!$ver) { $_ERROR = "Error: Version not found."; break; }
+	$res = $it->export_document($tid,$ver['id'],0,$format);
+	break;
+case 'all_closed':
+	$list = $it->get_alignments_by_status(ALSTAT_CLOSED,$tname);
+	foreach ($list as $al) {
+		$alname = $al['text_name'].'.'.$al['v1_name'].'.'.$al['v2_name'].'.alignment.xml';
+		$v1name = $al['text_name'].'.'.$al['v1_name'].'.xml';
+		$v2name = $al['text_name'].'.'.$al['v2_name'].'.xml';
+		print $alname;
+		if (!file_exists($alname)) {
+			$res = $it->export_alignment($al['id'],$format);
+			if (!$res) print ' - export failed: '.$_ERROR."\n";
+			else { 
+				if (file_put_contents($alname,$res)) print "\n"; 
+				else print " - cannot save file!\n";
+			}
+		} else print " - file already exists!\n";
+		print $v1name;
+		if (!file_exists($v1name)) {
+			$res = $it->export_document($al['text_id'],$al['v1_id'],$al['id'],$format);
+			if (!$res) print ' - export failed: '.$_ERROR."\n";
+			else {
+				if (file_put_contents($v1name,$res)) print "\n";
+				else print " - cannot save file!\n";
+			}
+		} else print " - file already exists!\n";
+		print $v2name;
+		if (!file_exists($v2name)) {
+			$res = $it->export_document($al['text_id'],$al['v2_id'],$al['id'],$format);
+			if (!$res) print ' - export failed: '.$_ERROR."\n";
+			else {
+				if (file_put_contents($v2name,$res)) print "\n"; 
+				else print " - cannot save file!\n";
+			}
+		} else print " - file already exists!\n";
+	}
+	$res = '';
+	break;
+}
+
+if (!$res) { 
+	$stderr = fopen('php://stderr', 'w'); 
+	fwrite($stderr,$_ERROR."\n"); 
+	fclose($stderr); 
+	return 1; 
+} else {
+	print $res;
+	return 0;
+}
+?>

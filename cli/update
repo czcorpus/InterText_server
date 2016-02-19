@@ -1,0 +1,102 @@
+#!/usr/bin/php
+<?php
+/*  Copyright (c) 2010-2016 Pavel Vondřička (Pavel.Vondricka@korpus.cz)
+ *  Copyright (c) 2010-2016 Charles University in Prague, Faculty of Arts,
+ *                          Institute of the Czech National Corpus
+ *
+ *  This file is part of InterText Server.
+ *
+ *  InterText Server is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  InterText Server is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with InterText Server.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+ini_set('error_reporting', 'E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED');
+
+$CLI_MODE = true;
+$userid = 0;
+
+array_shift($argv);
+while ($arg = array_shift($argv)) {
+	switch ($arg) {
+	case '-u':
+		$userid = array_shift($argv);
+		break;
+	case '-n':
+		$mydocname = array_shift($argv);
+		break;
+	case '-v':
+		$myversion = array_shift($argv);
+		break;
+	default:
+		if (substr($arg,0,1)=='-') {
+			print "Error: Unknow option '$arg'.\n"; exit;
+		} elseif ($filename=='') $filename = $arg;
+		else $fail=true;
+	}
+}
+
+$pwd = preg_replace('/[^\/]*$/','',$_SERVER['PATH_TRANSLATED']);
+require $pwd.'/../settings.php';
+require $pwd.'/../lib_intertext.php';
+
+$p = explode('/',$filename);
+$docname = $p[count($p)-1];
+list($docname,$version,$ext) = explode('.',$docname,3);
+if ($mydocname!='') $docname = $mydocname;
+if ($myversion!='') $version = $myversion;
+
+if ($filename=='' || $docname=='' || $version=='' || $fail) {
+	print "InterText CLI update utility
+============================
+Tool to update text versions already present in the database. The given file
+will be compared with the database for each text element and in case of
+difference the database elements will be updated with the new text. The
+structure (and 'id' attributes) must be identical! If not, the script fails
+as soon as some ID is not found in the database. However, changes commited up
+to this point will NOT be revoked! (The changes are recorded in the changelog
+table, at least.) Backup your texts before updating them!
+
+The script will output a list of all changes done, including the ID and both
+the old and the new text of every changed element.
+
+Usage:
+
+	update [options] <filename>
+	
+Filename format: 
+
+	<text_name>.<version_name>.<extensions>
+	
+Options:
+
+-n <text_name>
+	text name (overrides the text name acquired from the filename)
+	
+-v <version_name>
+ text version (overrides the version name acquired from filename)
+ 
+-u <user_id>
+	set user-id as the author of updates (default: '0' = nobody)
+	
+============================
+";
+	exit;
+}
+
+$it = new InterText;
+$res = $it->update_document($docname,$version,$filename,$userid,true); 
+if (!$res) { print $_ERROR."\n"; return 1; }
+else return 0;
+
+?>

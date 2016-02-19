@@ -1,0 +1,148 @@
+=========================
+INSTALLATION INSTRUCTIONS
+=========================
+
+Overview:
+
+1) Check requirements.
+2) Copy all files into a web-server accessible directory.
+3) Set-up MySQL.
+4) Check installation of automatic aligners.
+5) Check settings.php and adjust to your needs.
+6) Read user documentation (help.php) and run the CLI scripts (in 'cli/'
+directory) to get more informatiomn on their usage
+7) [optional] Check and adapt trigger scripts in 'triggers/' directory.
+
+
+Ad 1) REQUIREMENTS
+------------------
+
+- A web server (tested with Apache 2.2) with PHP >= 5.2 support (older versions
+might work well, but were not tested)
+- PHP CLI support for CLI tools
+- PHP support (modules) for: XMLReader, JSON.
+- if you want to import XML files with external DTDs (needed for declaration of
+entities, etc.), you need to allow the option "allow_url_fopen" in php.ini for
+both Apache web-server and the CLI version of PHP
+- MySQL v5.6 or higher for fulltext search support; for older versions you must
+turn off fulltext searches explicitly by inserting '$DISABLE_FULLTEXT = true;' 
+into your config.php
+
+
+Ad 2) Copy files to you web-server directory
+--------------------------------------------
+
+Ensure the symbolic link from index.php to aligner.php is there. 'aligner.php'
+is the main script that should be run.
+
+Ad 3) Set-up MySQL
+------------------
+
+- it is highly suggested to use the option innodb_file_per_table in your 
+MySQL configuration (usually in /etc/mysql/my.cnf, see the database 
+documentation)
+- ensure that you have no upper size limit set for the main tablespace 
+in innodb_data_file_path and that you have enough space available on your disk
+- [optional] if you want to use the MySQL fulltext search capability to search
+for words shorter than 4 characters in the texts, you have to adjust the 
+configuration of MySQL before creating the database / indices (or rebuild the
+indices) by setting "ft_min_word_len = 3" and innodb_ft_min_token_size if you 
+want to set it to even less characters - see MySQL documentation for more details
+- create basic database from intertext.sql script and create a user with full
+access to the database (or uncomment the default GRANT command in the script to
+create the default user)
+- if you do not have a database of users, create the table of default users from
+users.sql (InterText does not include its own management of users! but you can
+use any other system using MySQL database) - there are three default users
+created by users.sql: 'admin', 'resp' and 'editor', all with the default
+password 'test'; they represent the default three levels of users supported by
+InterText (see below for details)
+- set up the database connection parameters for the database of texts (and the
+database of users, if you made it a separate database) in settings.php
+
+Explanation of the system of users in the InterText system:
+
+There are three levels of users in the workflow of the InterCorp project: 
+
+- 'administrators' have all rights; it is the main project coordinator(s) who
+prepare texts for further processing, convert them into valid XML files and
+import them into the InterText system
+- 'supervisors (responsibles)' are people with (almost) full access to single 
+texts assigned to them by the administrator or another 'responsible' users; in 
+the InterCorp project, they are coordinators of language sections and supply the 
+raw texts to the administrators, who prepare them for further processing in 
+InterText; they can then assign the alignments (which they are responsible for) 
+to particular editors or to each other and should check the quality of the results
+- 'editors' are users-workers (often students), who only can edit alignments
+assigned to them by higher level users
+
+The finer control over access rights can be modified by rewriting appropriate
+parts in settings.php. See there for comments.
+
+
+Ad 4) Installation of automatic aligners
+----------------------------------------
+
+There are currently two supported automatic aligners:
+
+HUNALIGN (http://mokk.bme.hu/resources/hunalign):
+- you need to have a working binary 'hunalign' in the hunalign/ directory
+- there must be at least one default dictionary for hunalign, by default there
+is the empty dictionary _none_.dic
+- you can add as many dictionaries as you will, they will appear in InterText as
+different profiles for hunalign (the filename will be used without the .dic
+extension)
+- if you want to add pre-processing to the alignment process (e.g.
+lemmatization), you have to supply the processing into the process.sh script
+(see comments in the process.sh script for details) 
+
+TCA2 (http://gandalf.aksis.uib.no/tca2/):
+- place the jar archive with the command-line version (not the GUI version!) of
+TCA2 into the tca2/ directory; it has to be called tca2.jar
+- you need a working java 1.6 VM in your system (or whatever you version
+requires)
+- you need profiles for each pair of languages - each profile consists of a pair
+of configuration file (.cfg) and a dictionary file (.dic) with otherwise
+identical filenames (see enclosed files for examples)
+
+You do not need any automatic aligner, but it can save you a lot of manual work
+by preparing an alignment that you only check and correct manually. By default,
+InterText itself can only 'align' the sentences 'one-to-one' (the method called
+'plain alignment' in the system, its results have also visually lower status
+than results from the automatic aligners).
+
+
+Ad 5) settings.php
+------------------
+
+This is the first file which gets processed at every request. You can modify the
+default settings and permissions here. Read the file comments for further
+details.
+
+You have to set up the database connections for the database of texts and the
+database of users here. 
+
+For the database of users, you can supply your own name of the table of users
+and the names of columns with the username, password, user-level, first name and
+surname of the users. (The password should be encoded by md5sum.) You can also
+define which values of your user-level column correspond to which user level in
+the InterText system.
+
+By modifying the set_alignment_settings function, you can change the system of
+permissions for single texts, alignments and users.
+
+Ad 7) The triggers
+------------------
+
+The 'triggers/' directory contains scripts, which are run every time the status
+of some alignment is changed. The scripts can be any executable files with the
+appropriate names. The names are 'alstat_open', 'alstat_finished',
+'alstat_closed' and 'alstat_blocked' for the 'open', 'finished', 'closed' and
+'blocked' status. The most probable use will be for the "closed" (or "finished")
+script, which can e.g. export files from InterText, upload them to your corpus
+manager, update your database of completed texts, do accounting of payments to
+the editor / coordinator, etc.
+
+See for comments in the example scripts with details on arguments sent to the
+script.
+

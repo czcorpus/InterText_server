@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# script called when status 'finished' is set
+# parameters: text_name version1_name version2_name old_status alignment_id
+# old_status can be 'open', 'finished', 'closed' or 'blocked'
+# last line written to STDOUT will be showed to the used as 'WARNING'
+
+#echo "alignment of text '$1', version '$2' and '$3' (with id '$5') changed status from '$4' to 'finished'" >/tmp/report.txt
+
+#echo "Error message to show to the user."

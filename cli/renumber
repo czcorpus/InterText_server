@@ -1,0 +1,85 @@
+#!/usr/bin/php
+<?php
+/*  Copyright (c) 2010-2016 Pavel Vondřička (Pavel.Vondricka@korpus.cz)
+ *  Copyright (c) 2010-2016 Charles University in Prague, Faculty of Arts,
+ *                          Institute of the Czech National Corpus
+ *
+ *  This file is part of InterText Server.
+ *
+ *  InterText Server is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  InterText Server is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with InterText Server.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+ini_set('error_reporting', 'E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED');
+
+$CLI_MODE = true;
+$pwd = preg_replace('/[^\/]*$/','',$_SERVER['PATH_TRANSLATED']);
+require $pwd.'/../settings.php';
+require $pwd.'/../lib_intertext.php';
+
+$verbose = false;
+$twolevel = true;
+$tname = '';
+$vname = '';
+
+array_shift($argv);
+while ($arg = array_shift($argv)) {
+	switch ($arg) {
+	case '-1':
+		$twolevel = false;
+		break;
+	default:
+		if (substr($arg,0,1)=='-') {
+			print "Error: Unknow option '$arg'.\n"; exit;
+		} elseif ($tname=='') $tname = $arg;
+		elseif ($vname=='') $vname = $arg;
+		else $fail=true;
+	}
+}
+
+if (($tname=='' || $vname=='') || $fail) {
+	print "InterText CLI renumbering utility
+==================================
+Tool to renumber ID of the given text version in the InterText system.
+
+Usage:
+
+	renumber [options] <text_name> <version_name>
+	
+Options:
+
+-1
+	single level numbering only
+	
+===============================
+";
+	exit;
+}
+
+$it = new InterText;
+if (!($txtid=$it->text_id_by_name($tname))) die("Error: Text '$tname' not found in database.\n");
+$vid = $it->txtver_info($txtid,$vname);
+$vid = $vid['id'];
+if (!$vid) die("Error: Version '$vname' not found in database.\n");
+
+
+$res = $it->update_eids($txtid, $vid, $twolevel);
+
+if ($res==1 && $twolevel) {
+	print "Warning: Text renumbered, but only single level alignment was possible.\n";
+}
+
+return 0;
+
+?>

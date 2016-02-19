@@ -1,0 +1,156 @@
+Release 2.2.1 (no release yet)
+------------------------------
+
+- Permanent login added (does it really work as expected?) - update of settings.php necessary!
+- ignore changes in changelog if current element is marked as deleted and beyond that point in time (element IDs reused by the database may associate changes with wrong elements!)
+
+Release 2.2 (2014-11-10)
+------------------------
+
+Improvements:
+- support for transactions for better robustness of more complex actions (read UPDATE.txt if updating!)
+- possibility to turn off fulltext search (both transactions and fulltext search are not supported 
+  by MySQL <5.6) at the same time
+- display changelog of alignment changes if available (for supervisors)
+- updated documentation (help)
+
+Release 2.1.1 (2014-05-28)
+--------------------------
+
+Fixes:
+- textmanager failure on empty database
+
+Release 2.1 (2014-05-15)
+--------------------------
+
+- annoying complaints from cli/import
+- added paging in the alignment list
+- added paging in the text manager
+- added filter in textmanager
+- list all alignments of one text (all versions)
+- batch changes in alignment manager
+- (api.php) version 2 - support for faster merge inquiry
+- (api.php) version 2 - support for faster doc_changelist inquiry
+
+Release 2.0.1 (2013-09-16)
+--------------------------
+
+- synchronization (api.php): fix failures caused by clients sending time zone info in timestamps
+- synchronization (api.php): enforce renumbering in all cases (initially imported documents may have unique IDs but non-standard - we are always importing alignment with standard numbering)
+
+
+Release 2.0 (2013-05-14)
+------------------------
+
+- new config option $MERGE_UNCONFIRMED_FREELY to ignore unconfirmed alignments when checking for merge conflicts
+- new config option $DENY_EMPTY_UPDATES to deny creative users "updating" with empty text (i.e. deleting text completely from elements)
+- new modes for supervisors; combination of manual status update with automatic rolling (paging)
+- XML validation of imported documents now optional
+- proper error reporting on invalid XML import
+
+Fixes:
+
+- empty segments not shown when at the end of a page
+- export of alignment omits last position if there is is exactly a multiple of 200 positions
+- small fix of text upload form's behaviour on import failure
+
+Release 2.0rc2 (no release)
+---------------------------
+
+Improvements:
+
+- added filter (search) in the alignment list
+- cli/align script now supports "force" option (-f) which will delete any existing alignment before creating the new one
+
+Fixes:
+
+- minor fixes of error messages in api.php
+- user editor forgot to switch to the user database (in lib_intertext.php)
+- blank page when jumping to unchecked segments and there are none
+- PHP now requiring default timezone to be set (should appear in settings.php!)
+
+Release 2.0rc1 (2012-07-12)
+---------------------------
+- Read UPDATE.txt before upgrading your current installation!
+
+Features:
+- synchronization of texts and alignments with "InterText editor" clients
+- new state of alignment: "remote editor" - for alignments beeing worked on externally in InterText editor; the alignment is reserved for a particular remote editor (user) using InterText editor desktop application in sychronization with the server
+- added simple interface for management of users
+- ability to split and merge (parent) container elements - i.e. to insert and remove paragraph breaks
+- added new permissions and settings: $UPLOAD_MAXUSERLEVEL_CLIENT (to set the lowest level of users able of uploading new texts and alignments from InterText editor application; by default set to administrators only), $DOWNLOAD_TXTVER_MAXUSERLEVEL (to set the lowest level of users able to download text versions from the server into InterText editor in order to create new alignments; by default set to administrators only), $DOWNLOAD_TXTVER_FILTER (regular expression to match text versions (by name) which can be downloaded into InterText editor in order to create new alignments; by default all versions, i.e. '.*')
+- added "index.php" as a symbolic link to "aligner.php"
+- updated manual reflecting the new features (help)
+
+Release 1.7.1
+-------------
+- changed files: aligner.php
+
+Fixes:
+- search and bookmarks search did only work in "auto roll" modes
+
+Release 1.7
+-----------
+- changed files: lib_intertext.php, aligner.php, css/intertext.css, cli/export, settings.php
+- (optional changes: help.php, help_cs.php)
+
+Features:
+- added logging of all alignment changes on demand (turned off by default; add into settings.php:
+  $LOG_ALIGN_CHANGES=true; to activate) (no interface for this changelog; no undo!)
+- added new possible option to settings.php: $FORCE_SIMPLE_NUMBERING = true; (turned off by default) 
+  which enforces single level element renumbering and (as another side effect) makes it possible 
+  to keep original ID attributes for all elements from the original document except of the 
+  alignable ones (which *must* yield to renumbering)
+- added export with long IDs based on the (original) filename (as used by the ECPC project)
+  (settings.php & aligner.php)
+- now recursively showing history of changes for the deleted (< merged-in) elements as well
+
+Fixes:
+- previously "fixed" problem with importing 0:1 or 1:0 alignments from TCA2 appeared again when 
+  reversing the imported alignment
+
+Release 1.6.1
+-------------
+- changed files: lib_intertext.php
+
+- fixed the newly added check for gaps in imported alignments (it did not really work, but broke 
+  the import) (lib_intertext.php)
+- fixed problem with importing 0:1 or 1:0 alignments from TCA2, which links those to the parent
+  element instead (lib_intertext.php)
+
+Release 1.6
+-----------
+- changed files: lib_intertext.php, aligner.php, icons/changelog.png
+- (optional changes: help.php, help_cs.php)
+
+Features:
+- imported alignments are checked for completeness; if there is a gap in the alignment, the
+  import fails
+- the changed/edited elements can show their history of changes and their contents can be replaced
+  with some previous contents (state) (un-splitting or un-merging is still not possible but 
+  manually, though!)
+- searching for changed/edited elements
+- searching both sides (versions) at the same time
+
+
+Release 1.5
+-----------
+- database structure modified! (apply 'update-1.5.sql' script)
+- changed/added files: lib_intertext.php, aligner.php, cli/import, cli/align, css/intertext.css, 
+  icons/swap.png
+- (optional changes: help.php, help_cs.php, settings.php)
+
+Features:
+- English translation of the "user guide" (help.php), the Czech text is in 'help_cs.php'
+- imported texts remember their original filenames => imported alignment can identify
+  the texts by their original filenames and not just the internal 'text name' and 'version name' 
+- swap sides/versions in alignment (for admin)
+- import with 'cli/align' in the reverse direction
+- the supervisor (responsible) is now also allowed to edit alignment all the time (settings.php)
+
+Fixes:
+- searching bookmarks searched in all alignments of the given text (lib_intertext)
+
+Release 1.4
+-----------
+- initial public release

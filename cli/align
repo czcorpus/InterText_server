@@ -1,0 +1,211 @@
+#!/usr/bin/php
+<?php
+/*  Copyright (c) 2010-2016 Pavel Vondřička (Pavel.Vondricka@korpus.cz)
+ *  Copyright (c) 2010-2016 Charles University in Prague, Faculty of Arts,
+ *                          Institute of the Czech National Corpus
+ *
+ *  This file is part of InterText Server.
+ *
+ *  InterText Server is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  InterText Server is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with InterText Server.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+ 
+ini_set('error_reporting', 'E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED');
+
+$CLI_MODE = true;
+$pwd = preg_replace('/[^\/]*$/','',$_SERVER['PATH_TRANSLATED']);
+require $pwd.'/../settings.php';
+require $pwd.'/../lib_intertext.php';
+
+$edit = $DEFAULT_EDIT_PERMISSION;
+$method = $DEFAULT_METHOD;
+$profile = $DEFAULT_PROFILE;
+$defstat = 1;
+$verbose = false;
+$resp = 0;
+$editor = 0;
+$swap = false;
+$force = false;
+
+array_shift($argv);
+while ($arg = array_shift($argv)) {
+	switch ($arg) {
+	case '-i':
+		$filename = array_shift($argv);
+		break;
+	case '-m':
+		$method = array_shift($argv);
+		$profile = '';
+		list($method,$profile) = explode(':',$method,2);
+		break;
+	case '-r':
+		$resp = array_shift($argv);
+		break;
+	case '-d':
+		$defstat = array_shift($argv);
+		break;
+	case '-e':
+		$editor = array_shift($argv);
+		break;
+	case '-c_chstruct':
+		$c_chstruct = 1;
+		break;
+	case '-edit':
+		$edit = 1;
+		break;
+	case '-noedit':
+		$edit = 0;
+		break;
+	case '-swap':
+		$swap = true;
+		break;
+	case '-v':
+		$verbose = true;
+		break;
+	case '-f':
+		$force = true;
+		break;
+	case '-s':
+		$status = array_shift($argv);
+		break;
+	default:
+		if (substr($arg,0,1)=='-') {
+			print "Error: Unknow option '$arg'.\n"; exit;
+		} elseif ($tname=='') $tname = $arg;
+		elseif ($ver1=='') $ver1 = $arg;
+		elseif ($ver2=='') $ver2 = $arg;
+		else $fail=true;
+	}
+}
+
+$statusdata = "1=manual, 2=automatic, 3=plain";
+
+if (($filename=='' && ($tname=='' || $ver1=='' || $ver2=='')) || $fail) {
+	print "InterText CLI alignment utility
+===============================
+Tool to import and/or generate alignment between two different versions of one text in the InterText system.
+
+Usage:
+
+	align [options] <text_name> <version1_name> <version2_name>
+	align [options] -i <filename>
+	
+Options:
+
+-i <filename>
+	import initial alignment from file
+
+-swap
+	swap sides/versions when importing from file (option -i)
+	
+-d <status>
+	default status for imported alignment links with unknown status: 
+	$statusdata (default: manual)
+		
+-m <method>[:<profile>]
+	specify method (and profile) for authomatic alignment, currently 
+	available mathods: plain, tca2, hunalign (default: by settings.php, currently: '$DEFAULT_METHOD:$DEFAULT_PROFILE')
+	
+-r <user_id>
+	set user-id of the user responsible for the alignment (default: '0' = nobody)
+	
+-e <user_id>
+	set user-id of alignment editor (default: '0' = nobody)
+	
+-c_chstruct
+	enable permission to change structure of the central text version (default: disabled)
+	
+-edit
+	enable permission to edit the texts (default: by settings.php, currently: '$DEFAULT_EDIT_PERMISSION')
+	
+-noedit
+	disable permission to edit the text (default: by settings.php, currently: '$DEFAULT_EDIT_PERMISSION')
+
+-s <status>
+	set status for the alignment, possible values: open, finished, closed, blocked (default: open)
+	
+-f
+	force delete if alignment already exists
+
+-v
+	verbose output (show progress)
+===============================
+";
+	exit;
+}
+
+$it = new InterText;
+if ($tname!='' && $ver1!='' && $ver2!='') {
+	if (!($txtid=$it->text_id_by_name($tname))) die("Error: Text '$tname' not found in database.\n");
+	$v1 = $it->txtver_info($txtid,$ver1);
+	if (!$v1) die("Error: Version '$ver1' not found in database.\n");
+	$v2 = $it->txtver_info($txtid,$ver2);
+	if (!$v2) die("Error: Version '$ver2' not found in database.\n");
+	$aid = $it->insert_alignment($txtid,$v1['id'],$v2['id'],$method,$profile,$resp,$editor,$edit);
+	if ($aid)
+		$res = true;
+	else {
+		if ($force) {
+			$al = $it->get_alignment_by_name($tname,$ver1,$ver2);
+			//if (!$al) $al = $it->get_alignment_by_name($tname,$ver2,$ver1);
+			$aid = $al['id'];
+			$it->delete_alignment($aid);
+			$aid = $it->insert_alignment($txtid,$v1['id'],$v2['id'],$method,$profile,$resp,$editor,$edit);
+			$res = true;
+		} else
+			die("Error: Such alignment already exists.\n");
+	}
+} else $aid = FALSE;
+
+if ($filename && $filename!='') {
+	$res = $it->import_alignment($filename,$aid,$defstat,$verbose,FALSE,$method,$profile,$resp,$editor,$edit,$swap);
+	if ($res) $aid = $res;
+}
+
+if ($res) {
+	# Run automatic aligner as requested
+	switch ($method) {
+		case "tca2":
+			$res = $it->autoalign_tca2($aid,$profile,$verbose);
+			break;
+		case "hunalign":
+			$res = $it->autoalign_hunalign($aid,$profile,$verbose);
+			break;
+		default:
+			$res = $system->plain_alignment($aid);
+	}
+}	
+
+# In case of failure...
+if (!$res) {
+	if ($aid) $it->delete_alignment($aid);
+	if ($_ERROR=='') $_ERROR = 'Error while creating alignment. Turn on verbose mode (-v) for more information.'; 
+	print $_ERROR."\n";
+	return 1;
+} else {
+	if ($c_chstruct) $it->alignment_chcstruct($aid,$c_chstruct); 
+	if ($status!='') {
+		//if ($status=='closed') $res=$it->alignment_chstat($aid,ALSTAT_FINISHED);
+		if ($res) {
+			$stat = array_search($status,$ALSTAT);
+			if ($stat) $res=$it->alignment_chstat($aid,$stat);
+			else print "Error setting status: Unknown status '$status'.\n";
+		}
+		if (!$res) print "Error setting status: $_ERROR\n";
+	}
+}
+
+return 0;
+
+?>

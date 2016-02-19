@@ -1,0 +1,144 @@
+#!/usr/bin/php
+<?php
+/*  Copyright (c) 2010-2016 Pavel Vondřička (Pavel.Vondricka@korpus.cz)
+ *  Copyright (c) 2010-2016 Charles University in Prague, Faculty of Arts,
+ *                          Institute of the Czech National Corpus
+ *
+ *  This file is part of InterText Server.
+ *
+ *  InterText Server is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  InterText Server is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with InterText Server.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+ini_set('error_reporting', 'E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED');
+
+$CLI_MODE = true;
+$filename='';
+$validate = false;
+
+array_shift($argv);
+while ($arg = array_shift($argv)) {
+	switch ($arg) {
+	case '-e':
+		$myelements = array_shift($argv);
+		break;
+	case '-n':
+		$mydocname = array_shift($argv);
+		break;
+	case '-v':
+		$myversion = array_shift($argv);
+		break;
+	case '--validate':
+		$validate = true;
+		break;
+	case 'align':
+		$ver2 = array_shift($argv);
+    $alopts = array();
+		while ($opt = array_shift($argv)) $alopts[] = $opt;
+		$aloptions = join(' ',$alopts);
+		break;
+	case 'align1':
+		$ver1 = array_shift($argv);
+    $alopts = array();
+		while ($opt = array_shift($argv)) $alopts[] = $opt;
+		$aloptions = join(' ',$alopts);
+		break;
+	default:
+		if (substr($arg,0,1)=='-') {
+			print "Error: Unknow option '$arg'.\n"; exit;
+		} elseif ($filename=='') $filename = $arg;
+		else $fail=true;
+	}
+}
+
+$pwd = preg_replace('/[^\/]*$/','',$_SERVER['PATH_TRANSLATED']);
+require $pwd.'/../settings.php';
+require $pwd.'/../lib_intertext.php';
+
+$p = explode('/',$filename);
+$docname = $p[count($p)-1];
+list($docname,$version,$ext) = explode('.',$docname,3);
+if ($mydocname!='') $docname = $mydocname;
+if ($myversion!='') $version = $myversion;
+if ($myelements!='') $elements = strtr($myelements,',',' ');
+else $elements = $DEFAULT_TEXT_ELEMENTS;
+
+
+if ($filename=='' || $docname=='' || $version=='' || $fail) {
+	print "InterText CLI import utility
+============================
+Tool to import text versions into the InterText system and import or generate alignments between them.
+
+Usage:
+
+	import [options] <filename> [align <version2_name> [alignment_options]]
+	import [options] <filename> [align1 <version1_name> [alignment_options]]
+	
+Filename format: 
+
+	<text_name>.<version_name>.<extensions>
+	
+Options:
+
+-e <element_names>
+	comma separated list of names of XML elements containing alignable text (e.g. '-e head,s,verse')
+	
+-n <text_name>
+	text name (overrides the text name acquired from the filename)
+	
+-v <version_name>
+ text version (overrides the version name acquired from filename)
+
+--validate
+	force DTD validation
+ 
+Align:
+	Create alignment with version <version2_name> or <version1_name> after the import. The other version
+	must already be present in the system. Alignment is created by calling the associated 'align' utility.
+	
+Alignment options:
+	See the 'align' script for options.
+	
+Examples:
+
+- to import text 'Document1' version 'english' from file 'Document1.english.xml':
+
+	import Document1.english.xml
+	
+- to import text 'Document1' version 'english' from file 'd1_en.xml':
+
+	import -n Document1 -v english d1_en.xml
+	
+- to import 'Document1' version 'french' from file 'Document1.french.xml' and create 
+automatic alignment with the version 'english' of the same document:
+
+	import Document1.french.xml align english
+	
+- to import 'Document1' version 'french' from the file 'Document1.french.xml' and create
+alignment with version 'english', imported from file 'Document1.en-fr_alignment.xml':
+
+	import Document1.french.xml align english -i Document1.en-fr_alignment.xml
+============================
+";
+	exit;
+}
+
+$it = new InterText;
+$res = $it->import_document($docname,$version,$filename,$elements,true,$filename,$validate);
+if (!$res) { print $_ERROR."\n"; return 1; }
+elseif ($ver2!='') return system("$pwd/align $docname $version $ver2 $aloptions");
+elseif ($ver1!='') return system("$pwd/align $docname $ver1 $version $aloptions");
+else return 0;
+
+?>

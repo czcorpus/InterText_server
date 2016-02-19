@@ -1,0 +1,133 @@
+================================================
+   InterText - parallel text alignment editor
+================================================
+- version 2.2
+
+InterText is an on-line editor for aligned parallel texts. It was developed for
+the project InterCorp (http://www.korpus.cz/intercorp/?lang=en) to edit and
+manage alignments of multiple parallel language versions of texts at the level
+of sentences, but it is designed with flexibility in mind and supports custom
+XML documents and Unicode character set. The software is written in PHP and uses
+MySQL database as back-end.
+
+Features:
+---------
+- can manage any number of texts
+- can manage any number of text (language) versions for each text
+- import and export of any valid XML document (see LIMITATIONS & KNOWN ISSUES!)
+- support of unicode (UTF-8) by default
+- automatic conversion of custom entities into UTF-8 characters on import
+- arbitrary alignments between any pair of (language) versions of the same text
+- one level alignment, every text version can define its own XML elements
+containing text to be aligned
+- integration of the 'hunalign' and 'TCA2' automatic aligners
+- import and export of alignments in TEI XML format (stand-off alignment, no
+conversion, see below for details)
+- opt. export of documents with 'corresp' attributes on aligned elements
+- opt. export of documents with text segments enclosed in <seg> elements (for
+ParaConc compatibility)
+- possibility to edit text on-the-fly when editing alignments (can be forbidden
+on per-text basis)
+- keeps history of all changes to the text for later revision
+- possibility to change segmentation of elements (e.g. sentences) by splitting
+or merging them in the alignment editor (can be forbidden on per-text basis)
+- possibility to split or merge container (parent) elements (e.g. paragraphs)
+- separate possibility to prevent the change of segmentation (structure) for
+'pivot' text versions
+- automatic (one- or two-level) re-numbering of text elements after change in
+segmentation (structure)
+- possibility to set bookmarks in the alignment and jump quickly between them
+- possibility to search for substrings, fulltext search and regular expression
+based search in the texts (as limited by the MySQL-engine capabilities), search
+for "suspicious" alignments and edited/changed elements, etc.
+- basic workflow management based on three-level user hierarchy (no own user
+management, uses external database of users) and three-(four)-level status of
+alignments
+- command-line access to the import and export functions for batch-processing
+- triggers for external scripts on the change of alignment status
+- synchronization of texts and alignments with external InterText editor clients
+
+
+Technical details on file formats:
+----------------------------------
+- the system expects use of (at most) two place numbered id-attributes for all 
+alignable elements, the separator can be any of : , . - _ characters; their 
+parent elements can be numbered by one placed numbers; prefixes to the 
+id-attributes are possible, but they will be stripped on import (can be 
+regenerated on export as "long-ids" by the corresponding function in 
+settings.php
+- the default (re-)numbering scheme is to have plain numbers for containers
+(parents) and two placed numbers for alignable elements, separated by a colon
+(e.g. "12:3" for the third sentence (element) in the 12th paragraph (container))
+- if nested containers are detected in the document, only plain (one place)
+numbering of the alignable elements is applied and their parents (containers)
+are ignored (this feature was not tested properly)
+- the file format for TEI alignment file is one single "linkGrp" element with 
+two attributes: "toDoc" and "fromDoc"; their values should point to the 
+filenames of the separate documents, or at least have the form: 
+"document_name.version_name.extensions" - extensions are optional, but 
+"document_name" and "version_name" are used to identify the aligned document
+versions of this alignment according to the names as declared in InterText; 
+the "linkGrp" elements then contains the "link" elements, each corresponding 
+to one position (segment) in the alignment, with the following attributes: 
+	- "xtargets" is a semicolon separated list of element's id-values linked 
+together (first a space-separated list of element id-s from the  "toDoc" 
+document, and after the semicolon a space-separated list of element id-s
+from the "fromDoc" document); 
+	- "status" is an optional attribute of the status of the link - known values
+are "man" (for manually confirmed link), "auto"  (for automatically aligned 
+elements), "plain" (for unaligned / unconfirmed / uknown status); 
+	- "mark" is used internally to preserve user bookmarks from the editor, only 
+values 0 and 1 are known, but for 0 no attribute is generated at all
+	- "type" is only generated on export for convenience, it gives a dash 
+separated count of elements linked together by the link (e.g. "1-2")
+
+
+LIMITATIONS & KNOWN ISSUES
+--------------------------
+- the package does not contain the Hunalign nor the TCA2 automatic aligners
+- DOCTYPE, entity definitions and the XML declaration element are not imported
+(preserved) from the XML file (a problem of the PHP XMLReader module); the only
+preserved node types are: elements with their attributes (see below for
+exception!), text and CDATA contents, comments, processing instructions and
+whitespace formatting (CDATA not tested); you can (as a workaround) add your own
+DOCTYPE on export or otherwise modify the exported XML header by modification of
+the corresponding function in settings.php
+- the PHP XMLReader module is obscure in many ways and its behaviour changes
+in different versions of PHP; it is highly suggested to validate every document
+by a separate XML validator before import into InterText - the validation officially
+supported by the XMLReader behaves unpredictably and erratically, if it works at all; 
+in case of further issues, remove any DOCTYPE as well
+- the "id" attributes of elements are parsed and only final numbers are
+extracted: two placed numbers for alignable elements (e.g. "12:3") and single
+numbers for the other elements; the alignable elements and their parents
+(containers) get renumbered when the document structure is changed in the
+editor; in the two-level numbering mode, any other elements will just lose their
+id-attributes (i.e. will be cut down to any final numbers like the containers,
+if there were any); long id-attributes (and other id-s) can be (as a workaround)
+restored/re-created on export by the corresponding function defined in
+settings.php; by configuring InterText to use the single-level numbering of
+elements exclusively, the IDs of elements (except of the alignable ones) can be
+kept, however
+- some versions of "hunalign" are known to fail (segmentation fault) 
+with texts larger than ca. 30000 elements (this is not a problem of InterText)
+
+
+For more information read:
+--------------------------
+
+- INSTALL - installation instructions, set-up, customization and other
+administration-related information
+- UPDATE.txt - instructions for update
+- help.php - user-manual, including details on the functions and principles of
+the system
+- ChangeLog.txt - list of changes (added features and fixed bugs)
+
+
+License:
+--------
+This software is licensed under the GNU General Public License v3.
+http://www.gnu.org/licenses/gpl-3.0.html
+
+Copyright (c) 2010 Pavel Vondřička <Pavel.Vondricka@ff.cuni.cz>
+

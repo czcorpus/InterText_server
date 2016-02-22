@@ -114,7 +114,7 @@ kept, however
 with texts larger than ca. 30000 elements (this is not a problem of InterText)
 
 
-## For more information read:
+## For more information read...
 
 - INSTALL - installation instructions, set-up, customization and other
 administration-related information
@@ -122,6 +122,8 @@ administration-related information
 - help.php - user-manual, including details on the functions and principles of
 the system
 - CHANGELOG - list of changes (added features and fixed bugs)
+
+For very basic principles of parallel text alignment, you may also refer to the manual of the _InterText Editor_, available (a.o.) from the [project homepage](http://wanthalf.saga.cz/intertext).
 
 ## Acknowledgement:
 

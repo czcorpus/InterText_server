@@ -123,7 +123,7 @@ administration-related information
 the system
 - CHANGELOG - list of changes (added features and fixed bugs)
 
-For very basic principles of parallel text alignment, you may also refer to the manual of the _InterText Editor_, available (a.o.) from the [project homepage](http://wanthalf.saga.cz/intertext).
+For the very basic principles and problems of parallel text alignment, you may also refer to the manual of the _InterText Editor_, available (a.o.) from the [project homepage](http://wanthalf.saga.cz/intertext).
 
 ## Acknowledgement:
 

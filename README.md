@@ -1,13 +1,18 @@
 # InterText Server
 
 InterText is an on-line editor for aligned parallel texts. It was developed for
-the project InterCorp (http://www.korpus.cz/intercorp/?lang=en) to edit and
+the project [InterCorp](http://www.korpus.cz/intercorp/?lang=en) to edit and
 manage alignments of multiple parallel language versions of texts at the level
 of sentences, but it is designed with flexibility in mind and supports custom
 XML documents and Unicode character set. The software is written in PHP and uses
 MySQL database as back-end.
 
-## Features:
+_InterText Server_ is the original server based implementation with web-based interface, using PHP a MySQL database. It is designed for management of large, collaborative projects with many users, and - unlike the personal desktop application called _Intertext Editor_ - its installation and deployment requires at least some basic skills of server administrator.
+
+See the [InterText project homepage](http://wanthalf.saga.cz/intertext) for more details.
+
+## Features
+
 - can manage any number of texts
 - can manage any number of text (language) versions for each text
 - import and export of any valid XML document (see LIMITATIONS & KNOWN ISSUES!)
@@ -44,7 +49,8 @@ alignments
 - synchronization of texts and alignments with external InterText editor clients
 
 
-## Technical details on file formats:
+## Technical details on file formats
+
 - the system expects use of (at most) two place numbered id-attributes for all 
 alignable elements, the separator can be any of : , . - _ characters; their 
 parent elements can be numbered by one placed numbers; prefixes to the 
@@ -65,20 +71,21 @@ filenames of the separate documents, or at least have the form:
 versions of this alignment according to the names as declared in InterText; 
 the "linkGrp" elements then contains the "link" elements, each corresponding 
 to one position (segment) in the alignment, with the following attributes: 
-	- "xtargets" is a semicolon separated list of element's id-values linked 
+ - "xtargets" is a semicolon separated list of element's id-values linked 
 together (first a space-separated list of element id-s from the  "toDoc" 
 document, and after the semicolon a space-separated list of element id-s
 from the "fromDoc" document); 
-	- "status" is an optional attribute of the status of the link - known values
+ - "status" is an optional attribute of the status of the link - known values
 are "man" (for manually confirmed link), "auto"  (for automatically aligned 
 elements), "plain" (for unaligned / unconfirmed / uknown status); 
-	- "mark" is used internally to preserve user bookmarks from the editor, only 
+ - "mark" is used internally to preserve user bookmarks from the editor, only 
 values 0 and 1 are known, but for 0 no attribute is generated at all
-	- "type" is only generated on export for convenience, it gives a dash 
+ - "type" is only generated on export for convenience, it gives a dash 
 separated count of elements linked together by the link (e.g. "1-2")
 
 
 ## LIMITATIONS & KNOWN ISSUES
+
 - the package does not contain the Hunalign nor the TCA2 automatic aligners
 - DOCTYPE, entity definitions and the XML declaration element are not imported
 (preserved) from the XML file (a problem of the PHP XMLReader module); the only

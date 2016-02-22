@@ -51,35 +51,35 @@ alignments
 
 ## Technical details on file formats
 
-- the system expects use of (at most) two place numbered id-attributes for all 
+- the system expects use of id-attributes with (at most) two-part numbers (two levels) for all 
 alignable elements, the separator can be any of : , . - _ characters; their 
-parent elements can be numbered by one placed numbers; prefixes to the 
-id-attributes are possible, but they will be stripped on import (can be 
+parent elements can be numbered by simple numbers only; prefixes to the 
+id-attributes are possible, but they will be stripped on import (and can be 
 regenerated on export as "long-ids" by the corresponding function in 
 settings.php
-- the default (re-)numbering scheme is to have plain numbers for containers
-(parents) and two placed numbers for alignable elements, separated by a colon
+- the default (re-)numbering scheme is to have simple numbers for containers
+(parents) and two-part numbers for alignable elements, separated by a colon
 (e.g. "12:3" for the third sentence (element) in the 12th paragraph (container))
-- if nested containers are detected in the document, only plain (one place)
+- if nested containers are detected in the document, only simple (single level)
 numbering of the alignable elements is applied and their parents (containers)
-are ignored (this feature was not tested properly)
+are ignored
 - the file format for TEI alignment file is one single "linkGrp" element with 
 two attributes: "toDoc" and "fromDoc"; their values should point to the 
 filenames of the separate documents, or at least have the form: 
 "document_name.version_name.extensions" - extensions are optional, but 
 "document_name" and "version_name" are used to identify the aligned document
 versions of this alignment according to the names as declared in InterText; 
-the "linkGrp" elements then contains the "link" elements, each corresponding 
+the "linkGrp" element then contains the "link" elements, each corresponding 
 to one position (segment) in the alignment, with the following attributes: 
  - "xtargets" is a semicolon separated list of element's id-values linked 
 together (first a space-separated list of element id-s from the  "toDoc" 
 document, and after the semicolon a space-separated list of element id-s
 from the "fromDoc" document); 
- - "status" is an optional attribute of the status of the link - known values
+ - "status" is an optional attribute with the status of the link - known values
 are "man" (for manually confirmed link), "auto"  (for automatically aligned 
 elements), "plain" (for unaligned / unconfirmed / uknown status); 
  - "mark" is used internally to preserve user bookmarks from the editor, only 
-values 0 and 1 are known, but for 0 no attribute is generated at all
+values 0 and 1 are known, but for 0 no attribute is generated at all on export
  - "type" is only generated on export for convenience, it gives a dash 
 separated count of elements linked together by the link (e.g. "1-2")
 
@@ -100,16 +100,16 @@ by a separate XML validator before import into InterText - the validation offici
 supported by the XMLReader behaves unpredictably and erratically, if it works at all; 
 in case of further issues, remove any DOCTYPE as well
 - the "id" attributes of elements are parsed and only final numbers are
-extracted: two placed numbers for alignable elements (e.g. "12:3") and single
+extracted: two-part numbers for alignable elements (e.g. "12:3") and single
 numbers for the other elements; the alignable elements and their parents
 (containers) get renumbered when the document structure is changed in the
 editor; in the two-level numbering mode, any other elements will just lose their
 id-attributes (i.e. will be cut down to any final numbers like the containers,
 if there were any); long id-attributes (and other id-s) can be (as a workaround)
 restored/re-created on export by the corresponding function defined in
-settings.php; by configuring InterText to use the single-level numbering of
+settings.php; by configuring InterText to use single-level numbering of
 elements exclusively, the IDs of elements (except of the alignable ones) can be
-kept, however
+kept, however!
 - some versions of "hunalign" are known to fail (segmentation fault) 
 with texts larger than ca. 30000 elements (this is not a problem of InterText)
 

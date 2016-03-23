@@ -25,10 +25,14 @@ ini_set('error_reporting', 'E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED');
 
 $CLI_MODE = true;
 $tname='';
+$skipempty = false;
 
 array_shift($argv);
 while ($arg = array_shift($argv)) {
 	switch ($arg) {
+	case '-se':
+		$skipempty = true;
+		break;
 	case '-f':
 		$format = array_shift($argv);
 		break;
@@ -105,8 +109,11 @@ Options:
 		               (cannot be used in 'tname' mode)
 		segs          - XML file with <seg>ments (ParaConc format)
 
+-se     
+        skip empty segments in alignment export
+
 for all_closed:
--t <text_name>
+-tname <text_name>
 	export only alignments of the given text
 
 Examples:
@@ -141,12 +148,12 @@ $res = false;
 
 switch ($mode) {
 case 'aid':
-	$res = $it->export_alignment($aid,$format);
+	$res = $it->export_alignment($aid,$format,$skipempty);
 	break;
 case 'aname':
 	$al = $it->get_alignment_by_name($tname,$v1name,$v2name);
 	if (!$al) $al = $it->get_alignment_by_name($tname,$v2name,$v1name);
-	if ($al) $res = $it->export_alignment($al['id'],$format);
+	if ($al) $res = $it->export_alignment($al['id'],$format,$skipempty);
 	break;
 case 't1aid':
 	$al = $it->alignment_info($aid);
@@ -173,7 +180,7 @@ case 'all_closed':
 		$v2name = $al['text_name'].'.'.$al['v2_name'].'.xml';
 		print $alname;
 		if (!file_exists($alname)) {
-			$res = $it->export_alignment($al['id'],$format);
+			$res = $it->export_alignment($al['id'],$format,$skipempty);
 			if (!$res) print ' - export failed: '.$_ERROR."\n";
 			else { 
 				if (file_put_contents($alname,$res)) print "\n"; 

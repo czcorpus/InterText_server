@@ -629,7 +629,7 @@ class InterText
 	}
 
 # Export alignment
-	function export_alignment($aid,$format='xml',$maxstatus=STATUS_PLAIN) {
+	function export_alignment($aid,$format='xml',$skipempty=false,$maxstatus=STATUS_PLAIN) {
 		global $STATUS, $_ERROR;
 		$al = $this->alignment_info($aid);
 		if (!$al) { $_ERROR = "Error: Alignment not found."; return FALSE; }
@@ -648,6 +648,8 @@ class InterText
 				foreach ($res as $pos => $row) {
 					$v1ids=array(); $v2ids=array(); $stat = 0; $maxmark = 0;
 					$v1c=count($row[$v2_id]); $v2c=count($row[$v1_id]);
+					if ($skipempty && $v1c==0 && $v2c==0)
+                                            continue;
 					if (IsSet($row[$v1_id]))
 						foreach ($row[$v1_id] as $item) {
 							$v1ids[]= format_exported_ids('_alignable_',$item['element_id'],$al['text_name'],$al['ver1_name'],$format,$idformat);

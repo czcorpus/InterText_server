@@ -105,7 +105,7 @@
 	function loadProfiles(url) {
 		$.get(url,function(data){document.getElementById("profile_sel").innerHTML=data;});
 	}
-	function moveDialog(aid,id,defchange,eid) {
+	function moveDialog(aid,txt,id,defchange,eid) {
 		note = "";
 		if (defchange=="del") {
 			note = " (leave empty if you want to delete the paragraph break instead of moving the alignment)";
@@ -120,11 +120,11 @@
 		else {
 			if (defchange=="del") {
 				if (confirm("Are you sure you want to remove the paragraph break at this sentence?"))
-					window.location="?req=delpar&aid="+aid+"&id="+eid;
+					window.location="?req=delpar&aid="+aid+"&txt="+txt+"&id="+eid;
 			}
 			if (defchange=="new") {
 				if (confirm("Are you sure you want to insert a new paragraph break before this sentence?"))
-					window.location="?req=newpar&aid="+aid+"&id="+eid;
+					window.location="?req=newpar&aid="+aid+"&txt="+txt+"&id="+eid;
 			}
 		}
 	}

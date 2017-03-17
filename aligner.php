@@ -767,14 +767,14 @@ function halfrow($position,$row,$vid) {
 					if ($item['position']==1) { $defchange = 'del'; $extch=' or delete paragraph break';}
 					else { $defchange = 'new'; $extch=' or insert paragraph break';}
 				}
-				$img = "<a href=\"javascript:moveDialog($aid,{$item['link_id']},'$defchange',{$item['id']})\" title=\"move to another position$extch\">$img</a>";
+				$img = "<a href=\"javascript:moveDialog($aid,$txt,{$item['link_id']},'$defchange',{$item['id']})\" title=\"move to another position$extch\">$img</a>";
 			}
 			if (!$_SESSION['changelog'] && intval($item['changes'])>0) $cl=''; else $cl=' invisible';
 			$ch ='<span id="chlb_'.$item['id'].'" class="changelogbutton'.$cl.'"><a href="#" onclick="showChangelog(this,'.$aid.','.$item['id'].',\'on\')" title="changes"><img src="icons/changelog.png" alt="[ch]" class="chlb"/></a></span>';
 			$img.=$ch;
 			if (!$PERMISSIONS['readonly'] && $PERMISSIONS[$vid]['chstruct'] && $i!=count($row[$vid])-1) {
 				if ($hide) $jvbind = "onMouseOver=\"showElement('m{$item['id']}')\" onMouseOut=\"hideElement('m{$item['id']}')";
-				$merger = "<a href=\"$myurl?req=merge&amp;aid=$aid&amp;id={$item['id']}\" $jvbind\" onClick=\"return mergeConfirm(this,'{$item['id']}')\"><img class=\"merger$hide\" id=\"m{$item['id']}\" src=\"icons/merge.png\" alt=\"merge\" title=\"merge with the following element (sentence)\"/></a>";
+				$merger = "<a href=\"$myurl?req=merge&amp;aid=$aid&amp;txt=$txt&amp;id={$item['id']}\" $jvbind\" onClick=\"return mergeConfirm(this,'{$item['id']}')\"><img class=\"merger$hide\" id=\"m{$item['id']}\" src=\"icons/merge.png\" alt=\"merge\" title=\"merge with the following element (sentence)\"/></a>";
 			} else $merger='';
 			if (!$PERMISSIONS['readonly'] && $PERMISSIONS[$vid]['chtext']) $editable='editable'; else $editable='';
 			$comp = "<div class=\"element\">{$img}<span class=\"$editable\" id=\"{$item['id']}\" title=\"{$item['element_id']}\">".$item['contents']."</span>".$merger."</div><div class=\"changelog\" id=\"changes_{$item['id']}\">";
@@ -1523,7 +1523,7 @@ if (!$PERMISSIONS['readonly']) {
 </div>
 </body>
 <script type="text/javascript">
-$( ".editable" ).eip( "aligner.php?req=update_element&amp;aid=<?php print $aid; ?>", { 
+$( ".editable" ).eip( "aligner.php?req=update_element&amp;aid=<?php print $aid; ?>&amp;txt=<?php print $txt; ?>", { 
 		form_type: "textarea",
 		edit_event: "dblclick",
 		after_save: function( self ) {

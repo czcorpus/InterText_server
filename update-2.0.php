@@ -30,18 +30,18 @@ $it = new InterText;
 
 $query = "ALTER TABLE alignments ADD COLUMN remote_user BIGINT UNSIGNED, ADD INDEX index_remote_user (remote_user)";
 print "Modifying table 'alignments'.\n";
-mysql_query($query) OR print("- ERROR: Cannot modify database: ".mysql_error()."\n");
+mysqli_query($it->DB,$query) OR print("- ERROR: Cannot modify database: ".mysqli_error($it->DB)."\n");
 
 $query = "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='$DB_DATABASE' AND TABLE_NAME LIKE '%_changelog' AND TABLE_NAME NOT LIKE '%_align_%'";
-if (!$dbresult = mysql_query($query))
-	die("Cannot access database: ".mysql_error());
+if (!$dbresult = mysqli_query($it->DB,$query))
+	die("Cannot access database: ".mysqli_error($it->DB));
 $tables = array();
-while ($ret = mysql_fetch_assoc($dbresult)) { $tables[] = $ret['TABLE_NAME']; }
+while ($ret = mysqli_fetch_assoc($dbresult)) { $tables[] = $ret['TABLE_NAME']; }
 
 foreach($tables as $table) {
 	$query = "ALTER TABLE $table ADD COLUMN open BOOLEAN DEFAULT FALSE, ADD INDEX index_open (open)";
 	print "Modifying table '$table'.\n";
-	mysql_query($query) OR print("- ERROR: Cannot modify database: ".mysql_error()."\n");
+	mysqli_query($it->DB,$query) OR print("- ERROR: Cannot modify database: ".mysqli_error($it->DB)."\n");
 }
 
 

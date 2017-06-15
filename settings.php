@@ -160,28 +160,24 @@ if ($_REQUEST['req']=='login') {
 
 }
 
-if (!$CONNECTION = @MySQL_Connect($U_SERVER,$U_USER,$U_PASSWORD)) 
-	die("Cannot connect to the users database server: ".mysql_error());
-if (!$result = mysql_select_db($U_DATABASE))
-	die("Cannot open user database: ".mysql_error());
-// if (!$result = mysql_query("SET CHARACTER SET utf8"))
-// 	die("Cannot set encoding: ".mysql_error());
-if (!mysql_set_charset("utf8"))
-	die("Cannot set encoding: ".mysql_error());
+if (!$DB = @mysqli_connect($U_SERVER,$U_USER,$U_PASSWORD,$U_DATABASE))
+	die("Cannot connect to the users database server: ".mysqli_error($DB));
+if (!mysqli_set_charset($DB,"utf8"))
+	die("Cannot set encoding: ".mysqli_error($DB));
 
 $USER['username'] = $_SESSION['username'];
 $USER['passwd'] = $_SESSION['passwd'];
 
 ### Check username and password ###
-$cond = "($U_USERNAME='".mysql_real_escape_string($USER['username'])."' COLLATE utf8_bin AND $U_USERPASS='".mysql_real_escape_string($USER['passwd'])."' COLLATE utf8_bin)";
+$cond = "($U_USERNAME='".mysqli_real_escape_string($DB,$USER['username'])."' COLLATE utf8_bin AND $U_USERPASS='".mysqli_real_escape_string($DB,$USER['passwd'])."' COLLATE utf8_bin)";
 $query = "SELECT $U_USERID as id, $U_USERTYPE as type, $U_FIRSTNAME as firstname, $U_SURNAME as surname FROM $U_TABLE WHERE $cond";
-if (!$dbresult = mysql_query($query))
-	die("Cannot verify the user in the user database: ".mysql_error());
-if (mysql_num_rows($dbresult) != 1) {
+if (!$dbresult = mysqli_query($DB,$query))
+	die("Cannot verify the user in the user database: ".mysqli_error($DB));
+if (mysqli_num_rows($dbresult) != 1) {
 	if ($_REQUEST['req']=='login') $WARNING="Invalid username or password.";
 	$USER['username']=''; $USER['passwd']=''; $USER['type']='';
 } else {
-	$vysledek = mysql_fetch_assoc($dbresult);
+	$vysledek = mysqli_fetch_assoc($dbresult);
 	$USER['type'] = $vysledek['type'];
 	$USER['id'] = $vysledek['id'];
 	$USER['firstname'] = $vysledek['firstname'];
@@ -189,17 +185,17 @@ if (mysql_num_rows($dbresult) != 1) {
 	$USER['name'] = "{$vysledek['surname']}, {$vysledek['firstname']}";
 	# Load all users into a field
 	$query = "SELECT $U_USERID as id, $U_USERTYPE as type, $U_FIRSTNAME as firstname, $U_SURNAME as surname, $U_USERNAME as username FROM $U_TABLE ORDER BY $U_SURNAME, $U_FIRSTNAME";
-	if (!$dbresult = mysql_query($query))
-		die("Cannot read users database: ".mysql_error());
+	if (!$dbresult = mysqli_query($DB,$query))
+		die("Cannot read users database: ".mysqli_error($DB));
 	$USERS['']=array('surname'=>'*** nobody ***', 'name'=>'*** nobody ***');
-	while ($user =  mysql_fetch_assoc($dbresult)) {
+	while ($user =  mysqli_fetch_assoc($dbresult)) {
 		$user['name'] = "{$user['surname']}, {$user['firstname']}";
 		$USERS[$user['id']] = $user; 
 		if ($user['type']==$USER_RESP) $RESPS[$user['id']] = $user;
 		if ($user['type']==$USER_ADMIN) $ADMINS[$user['id']] = $user;
 	}
 }
-mysql_close($CONNECTION);
+mysqli_close($DB);
 $_SESSION['last_use']=mktime();
 
 ### REQUIRE A VALID USER ###

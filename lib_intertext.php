@@ -50,8 +50,8 @@ class InterText
 		global $DB_SERVER,$DB_USER,$DB_PASSWORD,$DB_DATABASE,$DISABLE_FULLTEXT;
 		if (!$this->DB = @mysqli_connect($DB_SERVER,$DB_USER,$DB_PASSWORD,$DB_DATABASE)) 
 			$this->_fail("Cannot connect to database: ".mysqli_error($this->DB));
-		if (!$result = mysqli_query("SET CHARACTER SET utf8"))
-				$this->_fail("Cannot set encoding UTF-8: ".mysqli_error($this->DB));
+		if (!mysqli_set_charset($this->DB,"utf8"))
+			$this->_fail("Cannot set encoding: ".mysqli_error($this->DB));
 		$this->autor = array();
 		if (!$DISABLE_FULLTEXT) {
       if (!$dbresult = mysqli_query($this->DB,"SELECT VERSION()>5.5"))
@@ -143,7 +143,7 @@ class InterText
     if ($verid===FALSE)
       return FALSE;
 		if (!$dbresult = mysqli_query($this->DB,"UPDATE `{$txtid}_elements` SET txtver_id='$verid' WHERE (id='$root_id')")) {
-			$this->_failure("Cannot access database: ".mysqli_error($this->DB);
+			$this->_failure("Cannot access database: ".mysqli_error($this->DB));
 			return FALSE;
     }
 		$stat = FALSE;

@@ -1,7 +1,8 @@
-Release 2.2.1 (no release yet)
+Release 2.3 (no release yet)
 ------------------------------
 
 Improvements:
+- use MySQLi for PHP7 compatibility
 - Permanent login added (does it really work as expected?) - update of settings.php necessary!
 - ignore changes in changelog if current element is marked as deleted and beyond that point in time (element IDs reused by the database may associate changes with wrong elements!)
 - option to export alignments (from CLI) without empty segments

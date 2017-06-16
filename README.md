@@ -41,7 +41,7 @@ segmentation (structure)
 - possibility to search for substrings, fulltext search and regular expression
 based search in the texts (as limited by the MySQL-engine capabilities), search
 for "suspicious" alignments and edited/changed elements, etc.
-- basic workflow management based on three-level user hierarchy (no own user
+- basic workflow management based on three-level user hierarchy (only basic user
 management, uses external database of users) and three-(four)-level status of
 alignments
 - command-line access to the import and export functions for batch-processing
@@ -133,6 +133,6 @@ This software and documentation was partly supported from the implementation of 
 
 This software is licensed under the GNU General Public License v3. (http://www.gnu.org/licenses/gpl-3.0.html)
 
-- Copyright (c) 2010-2016 Pavel Vondřička
-- Copyright (c) 2010-2016 Charles University in Prague, Faculty of Arts, Institute of the Czech National Corpus
+- Copyright (c) 2010-2017 Pavel Vondřička
+- Copyright (c) 2010-2017 Charles University in Prague, Faculty of Arts, Institute of the Czech National Corpus
 

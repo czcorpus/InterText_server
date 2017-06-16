@@ -46,7 +46,7 @@ class InterText
 # Initialization (constructor)
 	function InterText () {
 		global $DB_SERVER,$DB_USER,$DB_PASSWORD,$DB_DATABASE,$DISABLE_FULLTEXT;
-		if (!$this->DB = @mysqli_connect($DB_SERVER,$DB_USER,$DB_PASSWORD,$DB_DATABASE)) 
+		if (!$this->DB = @mysqli_connect($DB_SERVER,$DB_USER,$DB_PASSWORD,$DB_DATABASE))
 			$this->_fail("Cannot connect to database: ".mysqli_error($this->DB));
 		if (!mysqli_set_charset($this->DB,"utf8"))
 			$this->_fail("Cannot set encoding: ".mysqli_error($this->DB));
@@ -100,7 +100,7 @@ class InterText
 		$txt_elements = explode(' ',$text_elements);
 		//$_ERROR = "Error: Invalid XML document."; # just a default in case of failure when parsing
 		$_ERROR = '';
-		$xml = new XMLReader(); 
+		$xml = new XMLReader();
 		libxml_use_internal_errors(TRUE);
 		#if (!$xmldata=file_get_contents($filename)) {
 		#	$_ERROR = "Error: Error opening input file.";
@@ -303,7 +303,7 @@ class InterText
 				if ($e['txt_position']==$lastel['txt_position']+1) $out.="/>";
 				else $out.="</{$lastel['element_name']}>";
 				$close=FALSE;
-			} 
+			}
 			if ($close) $out.='>'; $close=FALSE;
 			$e['element_id'] = format_exported_ids($e['element_name'],$e['element_id'],$txtver['text_name'],$txtver['version_name'],$format,$idformat,$txtver['filename']);
 			if ($e['element_id']!='') {
@@ -313,17 +313,17 @@ class InterText
 			$corresp = $corr[$e['id']];
 			if (!$corresp) { $corresp='0'; }
 			$alignable = in_array($e['element_name'],$alignables);
-			$e['attributes'] = preg_replace('/\s*corresp="[^"]*"/','',$e['attributes']); 
+			$e['attributes'] = preg_replace('/\s*corresp="[^"]*"/','',$e['attributes']);
 			if ($cor_aid AND $alignable) {
-				$e['attributes'].= " corresp=\"$corresp\""; 
+				$e['attributes'].= " corresp=\"$corresp\"";
 			}
 			# SEGment start
 			if ($segs && $alignable && ($seg[$e['id']]!=$pos || !$openseg)) {
 				if ($openseg) $out.="</seg>\n";
 				while ($pos<$seg[$e['id']]-1) {  $pos++; $out.="<seg id=\"$pos\"></seg>\n"; }
 				$pos=$seg[$e['id']];
-				$out.="<seg id=\"$pos\">\n"; 
-				$openseg=true; 
+				$out.="<seg id=\"$pos\">\n";
+				$openseg=true;
 			}
 			if (substr($e['element_name'],0,2)!='__') {
 				if ($e['contents']!='') $out.="<{$e['element_name']}{$e['attributes']}>".$e['contents']."</{$e['element_name']}>";
@@ -358,19 +358,19 @@ class InterText
 		$e = $this->get_element($txt,$id);
 		if ($e['element_id']!='') $e['attributes'] = " id=\"{$e['element_id']}\"".$e['attributes'];
 		$corresp = $corr[$e['id']];
-		if ($corresp) { 
-			$e['attributes'] = preg_replace('/\s*corresp="[^"]*"/','',$e['attributes']); 
-			$e['attributes'].= " corresp=\"$corresp\""; 
+		if ($corresp) {
+			$e['attributes'] = preg_replace('/\s*corresp="[^"]*"/','',$e['attributes']);
+			$e['attributes'].= " corresp=\"$corresp\"";
 		}
 		if (substr($e['element_name'],0,2)!='__') {
 			if (count($e['children'])) {
 				$out.="<{$e['element_name']}{$e['attributes']}>";
 				foreach($e['children'] as $id) $out.=$this->element_to_xml($txt,$id,$corr);
 				$out.="</{$e['element_name']}>";
-			} 
-			elseif ($e['contents']!='') 
+			}
+			elseif ($e['contents']!='')
 				$out.="<{$e['element_name']}{$e['attributes']}>".$e['contents']."</{$e['element_name']}>";
-			else 
+			else
 				$out.="<{$e['element_name']}{$e['attributes']}/>";
 		}
 		elseif ($e['element_name']=='__DOCUMENT__')
@@ -398,7 +398,7 @@ class InterText
 			$v1_id = $al['ver1_id']; $v2_id = $al['ver2_id'];
 			if (!$al) { $_ERROR = "Error: Alignment not found."; return FALSE; }
 			if (!$al['v1uniq_ids']) { $this->update_eids($txt,$v1_id); $al = $this->alignment_info($aid); }
-			if (!$al['v2uniq_ids']) { $this->update_eids($txt,$v2_id); $al = $this->alignment_info($aid); } 
+			if (!$al['v2uniq_ids']) { $this->update_eids($txt,$v2_id); $al = $this->alignment_info($aid); }
 			if (!$al['v1uniq_ids'] OR !$al['v2uniq_ids']) { $_ERROR = "Error: Cannot update IDs."; return FALSE; }
 		}
 		if ($report) { print("Process: Initializing import...\nProgress: 0\n"); flush(); ob_flush(); }
@@ -450,7 +450,7 @@ class InterText
 					if ($ver1!=$al['ver1_name']) {
 						if ($ver1==$al['ver2_name']) $swap=true;
 						else {
-							if ($report) 
+							if ($report)
 								{ print("Process: Initializing import...<br />ERROR: Alignment links different text versions!\n"); flush(); ob_flush(); }
 							$xml->close();
 							$_ERROR = 'Error: Alignment links other versions than those requested.';
@@ -599,7 +599,7 @@ class InterText
 						return FALSE;
 					}
 				}
-				$position++; 
+				$position++;
 				if (!$this->_add_link($txt,$aid,$al['ver1_id'],$al['ver2_id'],$v1_ids,$v2_ids,$position,$status,$mark)) {
           $xml->close();
           if ($report) print("Process: Importing alignment from file...<br/>$_ERROR\n");
@@ -607,7 +607,7 @@ class InterText
           return FALSE;
 				}
 			}
-		} 
+		}
 		if ($xml->nodeType) {
 			if ($report) { print("Process: Importing alignment from file...<br/>ERROR: Invalid XML file!\n"); flush(); ob_flush(); }
       $xml->close();
@@ -632,7 +632,7 @@ class InterText
 		$txt = $al['text_id'];
 		$v1_id = $al['ver1_id']; $v2_id = $al['ver2_id'];
 		if (!$al['v1uniq_ids']) { $this->update_eids($txt,$v1_id); $al = $this->alignment_info($aid); }
-		if (!$al['v2uniq_ids']) { $this->update_eids($txt,$v2_id); $al = $this->alignment_info($aid); } 
+		if (!$al['v2uniq_ids']) { $this->update_eids($txt,$v2_id); $al = $this->alignment_info($aid); }
 		if (!$al['v1uniq_ids'] OR !$al['v2uniq_ids']) { $_ERROR = "Error: Cannot update IDs."; return FALSE; }
 		list($format,$idformat) = explode(':',$format,2);
 		if ($format=='xml' || $format=='xml_links') {
@@ -653,7 +653,7 @@ class InterText
 							if ($item['link_mark']>$maxmark) $maxmark = $item['link_mark'];
 						}
 					if (IsSet($row[$v2_id]))
-						foreach ($row[$v2_id] as $item) { 
+						foreach ($row[$v2_id] as $item) {
 							$v2ids[]= format_exported_ids('_alignable_',$item['element_id'],$al['text_name'],$al['ver2_name'],$format,$idformat);
 							if ($item['link_status']>$stat) $stat = $item['link_status'];
 							if ($item['link_mark']>$maxmark) $maxmark = $item['link_mark'];
@@ -902,7 +902,7 @@ class InterText
 // 	text_changed BOOL DEFAULT FALSE,
 // 	uniq_ids BOOL DEFAULT FALSE,
 // 	text_elements TEXT NOT NULL,
-// 
+//
 //   PRIMARY KEY (id),
 // 	INDEX index_name (version_name(20))
 // )";
@@ -916,7 +916,7 @@ class InterText
 // 	editor INT UNSIGNED,
 // 	c_chstruct BOOLEAN DEFAULT 0,
 // 	chtext BOOLEAN DEFAULT 0,
-// 
+//
 // 	PRIMARY KEY (id),
 // 	INDEX index_ver1 (ver1_id),
 // 	INDEX index_ver2 (ver2_id),
@@ -974,7 +974,7 @@ $table_changelog = "CREATE TABLE `{$txtid}_changelog` (
 	ts DATETIME NOT NULL,
 	old_contents TEXT,
 	open BOOLEAN DEFAULT FALSE,
-	
+
 	PRIMARY KEY(id),
 	INDEX index_txtver_id (txtver_id),
 	INDEX index_element_id (element_id),
@@ -987,7 +987,7 @@ $table_changelog = "CREATE TABLE `{$txtid}_changelog` (
 /* FULLTEXT index_ft_old_contents (old_contents) - not used */
 /*				if (!$dbresult = mysqli_query($this->DB,$table_versions))
 					$this->_fail("Cannot create new text in the database: ".mysqli_error($this->DB));*/
-				if (!$dbresult = mysqli_query($this->DB,"SET storage_engine=InnoDB")) {
+				if (!$dbresult = mysqli_query($this->DB,"SET default_storage_engine=InnoDB")) {
 					$this->_failure("Cannot set default storage engine to InnoDB: ".mysqli_error($this->DB));
           return FALSE;
         }
@@ -1082,11 +1082,11 @@ $table_changelog = "CREATE TABLE `{$txtid}_changelog` (
 				$position++; $txtpos++; $eid='';
 				$name = $xml->name; $eid = ''; $attributes='';
 				$empty = $xml->isEmptyElement;
-				if($xml->hasAttributes) 
+				if($xml->hasAttributes)
 					while($xml->moveToNextAttribute()) {
 						if ($xml->name=='id' && !($FORCE_SIMPLE_NUMBERING && !in_array($name,$txt_elements))) {
 							if (in_array($name,$txt_elements)) $preg = '/([0-9]+([\.:\-_,][0-9]+)?)$/'; else $preg = '/([0-9]+)$/';
-							if (preg_match($preg,trim($xml->value),$m)) 
+							if (preg_match($preg,trim($xml->value),$m))
 								$eid = strtr($m[1],'.:-_,',':::::');
 						} else {
 							$attributes .= " {$xml->name}=\"{$xml->value}\"";
@@ -1101,7 +1101,7 @@ $table_changelog = "CREATE TABLE `{$txtid}_changelog` (
 					#}
 					if ($this->_insert_element($txt,$txtverid,$txtpos,$parent_id,$position,$name,$eid,$attributes,$cont)===false)
             return FALSE;
-					if(!$xml->next()) { 
+					if(!$xml->next()) {
 						$this->_failure($_ERROR."Error: Cannot parse beyond element '{$name}' ID '$eid'.\n");
 						$arErrors = libxml_get_errors();
 						$xml_errors = "";
@@ -1116,7 +1116,7 @@ $table_changelog = "CREATE TABLE `{$txtid}_changelog` (
 					$my_id = $this->_insert_element($txt,$txtverid,$txtpos,$parent_id,$position,$name,$eid,$attributes,'NULL');
 					if ($my_id===FALSE)
             return FALSE;
-					if (!$empty) { 
+					if (!$empty) {
 						if (!$xml->read()) {
 							$this->_failure($_ERROR."Error: Cannot parse beyond new element: '{$name}' ID '$eid'.\n");
 							$arErrors = libxml_get_errors();
@@ -1126,7 +1126,7 @@ $table_changelog = "CREATE TABLE `{$txtid}_changelog` (
 								$_ERROR .= "XML errors:\n".$xml_errors."\n";
 							}
 							return FALSE;
-						} 
+						}
 						$txtpos = $this->parse_xml($xml,$my_id,$txt,$txtverid,$txtpos,$debug);
 						if (!$txtpos) {
               $this->_failure($_ERROR."Error: Error parsing subtree of element '{$name}' ID '$eid'.\n");
@@ -1138,7 +1138,7 @@ $table_changelog = "CREATE TABLE `{$txtid}_changelog` (
 					}
 				}
 				break;
-			case XMLReader::TEXT: 
+			case XMLReader::TEXT:
 				$position++; $txtpos++;
 				$name= '__TEXT__'; $eid = ''; $attributes='';
 				if ($this->_insert_element($txt,$txtverid,$txtpos,$parent_id,$position,$name,$eid,$attributes,$xml->value)===FALSE)
@@ -1172,7 +1172,7 @@ $table_changelog = "CREATE TABLE `{$txtid}_changelog` (
             return FALSE;
 				if (!$xml->read()) $continue = false;
 				break;
-			case XMLReader::SIGNIFICANT_WHITESPACE: 
+			case XMLReader::SIGNIFICANT_WHITESPACE:
 				$txtpos++;
 				$name= '__WS__'; $eid = ''; $attributes='';
 				if ($this->_insert_element($txt,$txtverid,$txtpos,$parent_id,$position,$name,$eid,$attributes,$xml->value)===FALSE)
@@ -1209,10 +1209,10 @@ $table_changelog = "CREATE TABLE `{$txtid}_changelog` (
 			case XMLReader::ELEMENT:
 				$name = $xml->name; $eid = '';
 				$empty = $xml->isEmptyElement;
-				if($xml->hasAttributes) 
+				if($xml->hasAttributes)
 					while($xml->moveToNextAttribute()) {
 						if ($xml->name=='id') {
-							if (preg_match('/([0-9]+([\.:\-_,][0-9]+)?)$/',trim($xml->value),$m)) 
+							if (preg_match('/([0-9]+([\.:\-_,][0-9]+)?)$/',trim($xml->value),$m))
 								$eid = strtr($m[1],'.:-_,',':::::');
 						}
 					}
@@ -1227,7 +1227,7 @@ $table_changelog = "CREATE TABLE `{$txtid}_changelog` (
 					#$this->_insert_element($txt,$txtverid,$txtpos,$parent_id,$position,$name,$eid,$attributes,$cont);
 					if(!$xml->next()) { $_ERROR='Error: Invalid XML!'; return FALSE; }
 				} else {
-					if (!$empty) { 
+					if (!$empty) {
 						if (!$xml->read()) { $_ERROR='Error: Invalid XML!'; return FALSE; }
 						$ret = $this->parse_xml_update($xml,$txt,$txtverid,$txt_elements,$userid,$verbose);
 						if (!$ret) return FALSE;
@@ -1236,7 +1236,7 @@ $table_changelog = "CREATE TABLE `{$txtid}_changelog` (
 				}
 				break;
 			case XMLReader::END_ELEMENT:
-				$xml->read(); 
+				$xml->read();
 				return true;
 				break;
 			default:
@@ -1391,7 +1391,7 @@ $table_changelog = "CREATE TABLE `{$txtid}_changelog` (
 		array_pop($ret);
 		return $ret[0]['ts'];
 	}
-	
+
 # Get alignments by status
 	function get_alignments_by_status($stat,$tname='') {
 		$ret = array();
@@ -1436,7 +1436,7 @@ $table_changelog = "CREATE TABLE `{$txtid}_changelog` (
                             break;
 			if ($row['chtype']=='M')
 				$row['assoc'] = $this->get_changelog($txt, $this->get_id_by_assoc_id($txt, $row['id']), $since, $skipopen, $userid, true);
-			$ret[] = $row; 
+			$ret[] = $row;
 		}
 		return $ret;
 	}
@@ -1451,7 +1451,7 @@ $table_changelog = "CREATE TABLE `{$txtid}_changelog` (
     if (!$dbresult = mysqli_query($this->DB,$query))
       $this->_fail("Cannot access database: ".mysqli_error($this->DB)."\nQuery: ".$query);
     while ($row =  mysqli_fetch_assoc($dbresult)) {
-      $ret[] = $row; 
+      $ret[] = $row;
     }
     return $ret;
   }
@@ -1598,7 +1598,7 @@ $table_changelog = "CREATE TABLE `{$txtid}_changelog` (
 			return $ret['pos'];
 		} else return FALSE;
 	}
-	
+
 # Get position of next mark
 	function get_next_mark($aid,$mypos,$dirup) {
 		$al = $this->alignment_info($aid);
@@ -1723,13 +1723,13 @@ $table_changelog = "CREATE TABLE `{$txtid}_changelog` (
 		if (!$xml->read()) {
 			if (!$debug) $ers = error_reporting($ers);// else $this->report_libxml_errors();
 			$this->_failure('Invalid XML!');
-			return FALSE; 
-		}	
-		while($xml->nodeType) { 
+			return FALSE;
+		}
+		while($xml->nodeType) {
 			if ((!$ret=$xml->read()) && ($xml->nodeType)) {
 				if (!$debug) $ers = error_reporting($ers); //else $this->report_libxml_errors();
 				$this->_failure('Invalid XML!');
-				return FALSE; 
+				return FALSE;
 			}
 		}
 		$xml->close();
@@ -1745,7 +1745,7 @@ $table_changelog = "CREATE TABLE `{$txtid}_changelog` (
           error_log("XML errors:\n".$xml_errors."\n");
         }
 	}
-	
+
 # Update text of an element
 	function update_element_text($txt,$id,$text,$userid=0,$change='E',$assoc='NULL', $letopen=false) {
 		if (!$dbresult = mysqli_query($this->DB,"START TRANSACTION")) {
@@ -1761,7 +1761,7 @@ $table_changelog = "CREATE TABLE `{$txtid}_changelog` (
 		} else
 			return FALSE;
 	}
-	
+
 	function _update_element_text($txt,$id,$text,$userid=0,$change='E',$assoc='NULL', $letopen=false) {
 		$change_id = false;
 		# Check for brokem XML elements...
@@ -1795,7 +1795,7 @@ $table_changelog = "CREATE TABLE `{$txtid}_changelog` (
 		}
 		return $change_id;
 	}
-	
+
 # Reset remote changes as closed (fully comitted)
 	function close_updates($txt, $verid, $userid) {
 		global $LOG_EDIT_CHANGES;
@@ -1819,7 +1819,7 @@ $table_changelog = "CREATE TABLE `{$txtid}_changelog` (
 			return mysqli_insert_id($this->DB);
 		} else return 0;
 	}
-	
+
 # Log change of alignment
 	function log_align_change($txt, $aid, $ver, $id, $pos, $type, $userid=0) {
 		global $LOG_ALIGN_CHANGES;
@@ -1833,7 +1833,7 @@ $table_align_changelog = "CREATE TABLE IF NOT EXISTS `{$txt}_align_changelog` (
 	chtype CHAR(1) NOT NULL,
 	userid INT UNSIGNED,
 	ts DATETIME NOT NULL,
-	
+
 	PRIMARY KEY(id),
 	INDEX index_txtver_id (txtver_id),
 	INDEX index_alignment_id (alignment_id),
@@ -1841,7 +1841,7 @@ $table_align_changelog = "CREATE TABLE IF NOT EXISTS `{$txt}_align_changelog` (
 	INDEX index_userid (userid),
 	INDEX index_ts (ts)
 )";
-			if (!$dbresult = mysqli_query($this->DB,"SET storage_engine=InnoDB"))
+			if (!$dbresult = mysqli_query($this->DB,"SET default_storage_engine=InnoDB"))
 				$this->_fail("Cannot set default storage engine to InnoDB: ".mysqli_error($this->DB));
 			if (!$dbresult = mysqli_query($this->DB,$table_align_changelog))
 				$this->_fail("Cannot create new alignment changelog table in the database: ".mysqli_error($this->DB));
@@ -1963,7 +1963,7 @@ $table_align_changelog = "CREATE TABLE IF NOT EXISTS `{$txt}_align_changelog` (
 			while ($cal = mysqli_fetch_assoc($dbresult)) { $locs[] = "alignment '{$cal['v1']} - {$cal['v2']}' ({$cal['aid']}) at positions {$cal['p1']}/{$cal['p2']}"; }
 			$_ERROR = "Error: Cannot merge elements linked to different positions (segments). Please correct manually: ".join(' and ',$locs).'.';
 			return FALSE;
-		}	
+		}
 		return TRUE;
 	}
 
@@ -2031,7 +2031,7 @@ $table_align_changelog = "CREATE TABLE IF NOT EXISTS `{$txt}_align_changelog` (
 			#print "go to failure\n".join(' and ',$locs).'.';
 			$this->_failure("Error: Cannot merge elements linked to different positions (segments). Please correct manually: ".join(' and ',$locs).'.');
 			return FALSE;
-		}	
+		}
 #print "P2\n";
 		# Update the text of the merged element_id
 		$assoc = $this->_update_element_text($txt,$id,$el1['contents'].' '.$el2['contents'],$userid,'M', 'NULL', $letopen);
@@ -2203,7 +2203,7 @@ $table_align_changelog = "CREATE TABLE IF NOT EXISTS `{$txt}_align_changelog` (
 			return FALSE;
 		}
 		if (mysqli_num_rows($dbresult)) $el1 = mysqli_fetch_assoc($dbresult);
-		else  { 
+		else  {
 			$this->_failure("Element '$id' not found!");
 			return FALSE;
 		}
@@ -2307,7 +2307,7 @@ $table_align_changelog = "CREATE TABLE IF NOT EXISTS `{$txt}_align_changelog` (
 		mysqli_query($this->DB,"DROP TABLE tmp_nesting") or $this->_fail("Cannot drop temp table in database: ".mysqli_error($this->DB));
 		return FALSE;
 	}
-	
+
 # Get text count
   function texts_count($filter=array()) {
     $filter_cond = '';
@@ -2326,7 +2326,7 @@ $table_align_changelog = "CREATE TABLE IF NOT EXISTS `{$txt}_align_changelog` (
     $ret = mysqli_fetch_assoc($dbresult);
     return $ret['count'];
   }
-	
+
 # List all texts and versions
 	function list_texts($offset = 0, $limit = 0, $filter=array()) {
 		$texts=array();
@@ -2394,7 +2394,7 @@ $table_align_changelog = "CREATE TABLE IF NOT EXISTS `{$txt}_align_changelog` (
 				$contel = join(' OR ',$contels);
 				# First number all container elements
 				@mysqli_query($this->DB,"SET @num:=0") or $this->_fail("Cannot initiate counter in database: ".mysqli_error($this->DB));
-				@mysqli_query($this->DB,"UPDATE `{$txt}_elements` SET element_id=@num:=@num+1 WHERE txtver_id=$docid AND ($contel) ORDER BY txt_position") 
+				@mysqli_query($this->DB,"UPDATE `{$txt}_elements` SET element_id=@num:=@num+1 WHERE txtver_id=$docid AND ($contel) ORDER BY txt_position")
 					or $this->_fail("Cannot update parent elements in database: ".mysqli_error($this->DB));
 				# Now, copy the parent's (container's) new IDs to the alignable elements
 				@mysqli_query($this->DB,"UPDATE `{$txt}_elements` e, `{$txt}_elements` p SET e.element_id=p.element_id WHERE e.txtver_id=$docid AND e.parent=p.id AND ($alignable)")
@@ -2433,7 +2433,7 @@ $table_align_changelog = "CREATE TABLE IF NOT EXISTS `{$txt}_align_changelog` (
 			or $this->_fail("Cannot update link: ".mysqli_error($this->DB));
 		return TRUE;
 	}
-	
+
 # Change status of a single link
 	function change_mark($aid,$pos,$val) {
 		$al = $this->alignment_info($aid);
@@ -2573,7 +2573,7 @@ $table_align_changelog = "CREATE TABLE IF NOT EXISTS `{$txt}_align_changelog` (
           $this->_failure("No links found in file!");
 					return FALSE;
 			}
-			$xml = new XMLReader(); 
+			$xml = new XMLReader();
 			$xml->open($resfilename);
 			while ($xml->name!='linkGrp') {
 				$step=@$xml->read();
@@ -2766,11 +2766,11 @@ $table_align_changelog = "CREATE TABLE IF NOT EXISTS `{$txt}_align_changelog` (
 				if ($report AND $prog!=$lastprog) { $lastprog=$prog; print "Progress: $prog\n"; flush(); ob_flush(); }
 				list($v1p,$v2p,$prec) = explode("\t",$line);
 				$v1_ids = array(); $v2_ids = array();
-				while ($ptr1<$v1p) { 
+				while ($ptr1<$v1p) {
 					if ($elements1[$ptr1]) $v1_ids[] = $elements1[$ptr1];
 					$ptr1++;
 				}
-				while ($ptr2<$v2p) { 
+				while ($ptr2<$v2p) {
 					if ($elements2[$ptr2]) $v2_ids[] = $elements2[$ptr2];
 					$ptr2++;
 				}
@@ -2782,7 +2782,7 @@ $table_align_changelog = "CREATE TABLE IF NOT EXISTS `{$txt}_align_changelog` (
           }
 				}
 			}
-			unlink($resfilename); 
+			unlink($resfilename);
 		} else {
 			if ($report) { print "Process: Nothing to align. Skipping hunalign.\nProgress: 0\n"; flush(); ob_flush(); }
 		}
@@ -2795,7 +2795,7 @@ $table_align_changelog = "CREATE TABLE IF NOT EXISTS `{$txt}_align_changelog` (
 		//if ($incompl) $this->autoalign_hunalign($aid,$profile,$report);
 		return TRUE;
 	}
-	
+
 	function autoalignment_profiles($aligner) {
 		$profiles = array();
 		switch ($aligner) {
@@ -2826,7 +2826,7 @@ function unique_id() {
          | ($ipbits[2] << 8)
          | $ipbits[3], $sec, $usec);
   return $uid;
-} 
+}
 
 	# Shift text (from the given link ID on) to a new position
 	function move_to($txt,$lid,$newpos) {
@@ -2886,7 +2886,7 @@ function unique_id() {
 			or $this->_fail("Cannot update alignments: ".mysqli_error($this->DB));
 		return true;
 	}
-	
+
 # Change the "status" for alignment
 	function alignment_chstat($aid,$status) {
 		global $_ERROR, $ALSTAT;
@@ -2900,11 +2900,11 @@ function unique_id() {
 		#	}
 		#} else
 		if ($status==ALSTAT_FINISHED) {
-			if (!$this->alignment_check_finished($aid)) 
+			if (!$this->alignment_check_finished($aid))
 				return FALSE;
 		}
 		if ($status==ALSTAT_FINISHED || $status==ALSTAT_CLOSED) {
-			if (!$this->alignment_check_complete($aid)) 
+			if (!$this->alignment_check_complete($aid))
 				return FALSE;
 		}
 		$output = array(); $retval = 0;
@@ -2956,7 +2956,7 @@ function unique_id() {
 # Check whether the alignment is complete
 	function alignment_check_complete($aid) {
 		global $_ERROR;
-		# Test for incomplete alignment 
+		# Test for incomplete alignment
 		$al = $this->alignment_info($aid);
 		$txt = $al['text_id'];
 		$v1 = $al['ver1_id']; $v2 = $al['ver2_id'];

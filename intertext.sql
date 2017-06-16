@@ -1,5 +1,5 @@
 #DROP DATABASE intertext;
-SET storage_engine=InnoDB;
+SET default_storage_engine=InnoDB;
 CREATE DATABASE intertext DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 GRANT ALL PRIVILEGES ON intertext.* TO 'intertext'@'localhost' IDENTIFIED BY 'intertext';

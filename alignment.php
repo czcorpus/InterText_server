@@ -1,6 +1,6 @@
 <?php
-/*  Copyright (c) 2010-2016 Pavel Vondřička (Pavel.Vondricka@korpus.cz)
- *  Copyright (c) 2010-2016 Charles University in Prague, Faculty of Arts,
+/*  Copyright (c) 2010-2017 Pavel Vondřička (Pavel.Vondricka@korpus.cz)
+ *  Copyright (c) 2010-2017 Charles University in Prague, Faculty of Arts,
  *                          Institute of the Czech National Corpus
  *
  *  This file is part of InterText Server.
@@ -21,7 +21,7 @@
  */
 
 set_time_limit(9999);
-require 'settings.php';
+require 'init.php';
 require 'lib_intertext.php';
 $system = new InterText;
 

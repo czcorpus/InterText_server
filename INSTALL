@@ -8,7 +8,7 @@ Overview:
 2) Copy all files into a web-server accessible directory.
 3) Set-up MySQL.
 4) Check installation of automatic aligners.
-5) Check settings.php and adjust to your needs.
+5) Check config/config.php and adjust to your needs.
 6) Read user documentation (help.php) and run the CLI scripts (in 'cli/'
 directory) to get more informatiomn on their usage
 7) [optional] Check and adapt trigger scripts in 'triggers/' directory.
@@ -58,7 +58,7 @@ created by users.sql: 'admin', 'resp' and 'editor', all with the default
 password 'test'; they represent the default three levels of users supported by
 InterText (see below for details)
 - set up the database connection parameters for the database of texts (and the
-database of users, if you made it a separate database) in settings.php
+database of users, if you made it a separate database) in config/config.php
 
 Explanation of the system of users in the InterText system:
 
@@ -77,7 +77,7 @@ to particular editors or to each other and should check the quality of the resul
 assigned to them by higher level users
 
 The finer control over access rights can be modified by rewriting appropriate
-parts in settings.php. See there for comments.
+parts in config/default_permissions.php. See there for comments.
 
 
 Ad 4) Installation of automatic aligners
@@ -112,15 +112,16 @@ InterText itself can only 'align' the sentences 'one-to-one' (the method called
 than results from the automatic aligners).
 
 
-Ad 5) settings.php
+Ad 5) configuration
 ------------------
 
-This is the first file which gets processed at every request. You can modify the
-default settings and permissions here. Read the file comments for further
-details.
+The files in the config/ directory are the first files which get processed 
+at every request. You can modify the default settings and permissions here.
+The config.php file contains the very basic settings and defaults.
+Read the file comments for further details.
 
 You have to set up the database connections for the database of texts and the
-database of users here. 
+database of users in the config/config.php file. 
 
 For the database of users, you can supply your own name of the table of users
 and the names of columns with the username, password, user-level, first name and
@@ -128,8 +129,8 @@ surname of the users. (The password should be encoded by md5sum.) You can also
 define which values of your user-level column correspond to which user level in
 the InterText system.
 
-By modifying the set_alignment_settings function, you can change the system of
-permissions for single texts, alignments and users.
+By modifying the set_alignment_settings function in config/default_permissions.php,
+you can change the system of permissions for single texts, alignments and users.
 
 Ad 7) The triggers
 ------------------

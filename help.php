@@ -1,6 +1,6 @@
 <?php
-/*  Copyright (c) 2010-2016 Pavel Vondřička (Pavel.Vondricka@korpus.cz)
- *  Copyright (c) 2010-2016 Charles University in Prague, Faculty of Arts,
+/*  Copyright (c) 2010-2017 Pavel Vondřička (Pavel.Vondricka@korpus.cz)
+ *  Copyright (c) 2010-2017 Charles University in Prague, Faculty of Arts,
  *                          Institute of the Czech National Corpus
  *
  *  This file is part of InterText Server.
@@ -20,7 +20,7 @@
  *
  */
  
-require 'settings.php';
+require 'init.php';
 require 'header.php';
 ?>
 <div id="help">

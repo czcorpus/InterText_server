@@ -1,6 +1,6 @@
 <?php
-/*  Copyright (c) 2010-2016 Pavel Vondřička (Pavel.Vondricka@korpus.cz)
- *  Copyright (c) 2010-2016 Charles University in Prague, Faculty of Arts,
+/*  Copyright (c) 2010-2017 Pavel Vondřička (Pavel.Vondricka@korpus.cz)
+ *  Copyright (c) 2010-2017 Charles University in Prague, Faculty of Arts,
  *                          Institute of the Czech National Corpus
  *
  *  This file is part of InterText Server.
@@ -22,15 +22,12 @@
 
 #setlocale(LC_COLLATE,'cs_CZ.utf8');
 
-# override the following default in settings.php!
-date_default_timezone_set('Europe/Prague');
-
 if ($_SERVER['HTTPS']!='') $prot='https://'; else $prot='http://';
-$myurl= $prot.$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF']; # 'api.php';
+$myurl = $prot.$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF']; # 'api.php';
 $edurl = str_replace('api.php', 'aligner.php', $myurl);
 $CLI_MODE=true;
 
-require 'settings.php';
+require 'init.php';
 require 'lib_intertext.php';
 $system = new InterText;
 

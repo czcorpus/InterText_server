@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
-/*  Copyright (c) 2010-2016 Pavel Vondřička (Pavel.Vondricka@korpus.cz)
- *  Copyright (c) 2010-2016 Charles University in Prague, Faculty of Arts,
+/*  Copyright (c) 2010-2017 Pavel Vondřička (Pavel.Vondricka@korpus.cz)
+ *  Copyright (c) 2010-2017 Charles University in Prague, Faculty of Arts,
  *                          Institute of the Czech National Corpus
  *
  *  This file is part of InterText Server.
@@ -20,8 +20,6 @@
  *  along with InterText Server.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
-ini_set('error_reporting', 'E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED');
 
 $CLI_MODE = true;
 $tname='';
@@ -75,7 +73,7 @@ while ($arg = array_shift($argv)) {
 }
 
 $pwd = preg_replace('/[^\/]*$/','',$_SERVER['PATH_TRANSLATED']);
-require $pwd.'/../settings.php';
+require $pwd.'/../init.php';
 require $pwd.'/../lib_intertext.php';
 
 if ($mode=='' || ($mode=='aname' && ($tname=='' || $v1name=='' || $v2name=='')) || ($mode=='tname' && ($tname=='' || $vname=='')) || (substr($mode,-3)=='aid' && $aid=='')) {

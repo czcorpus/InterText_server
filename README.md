@@ -56,7 +56,7 @@ alignable elements, the separator can be any of : , . - _ characters; their
 parent elements can be numbered by simple numbers only; prefixes to the 
 id-attributes are possible, but they will be stripped on import (and can be 
 regenerated on export as "long-ids" by the corresponding function in 
-settings.php
+config/export_customization.php
 - the default (re-)numbering scheme is to have simple numbers for containers
 (parents) and two-part numbers for alignable elements, separated by a colon
 (e.g. "12:3" for the third sentence (element) in the 12th paragraph (container))
@@ -93,7 +93,7 @@ preserved node types are: elements with their attributes (see below for
 exception!), text and CDATA contents, comments, processing instructions and
 whitespace formatting (CDATA not tested); you can (as a workaround) add your own
 DOCTYPE on export or otherwise modify the exported XML header by modification of
-the corresponding function in settings.php
+the corresponding function in config/export_customization.php
 - the PHP XMLReader module is obscure in many ways and its behaviour changes
 in different versions of PHP; it is highly suggested to validate every document
 by a separate XML validator before import into InterText - the validation officially
@@ -107,9 +107,9 @@ editor; in the two-level numbering mode, any other elements will just lose their
 id-attributes (i.e. will be cut down to any final numbers like the containers,
 if there were any); long id-attributes (and other id-s) can be (as a workaround)
 restored/re-created on export by the corresponding function defined in
-settings.php; by configuring InterText to use single-level numbering of
-elements exclusively, the IDs of elements (except of the alignable ones) can be
-kept, however!
+config/export_customization.php; by configuring InterText to use single-level 
+numbering of elements exclusively, the IDs of elements (except of the alignable ones)
+can be kept, however!
 - some versions of "hunalign" are known to fail (segmentation fault) 
 with texts larger than ca. 30000 elements (this is not a problem of InterText)
 

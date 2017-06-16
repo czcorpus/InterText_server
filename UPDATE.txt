@@ -1,3 +1,15 @@
+-> version 2.3
+==============
+
+- the configuration file settings.php has been replaced and split into the files:
+init.php
+config/config.php
+config/default_permissions.php
+config/export_customization.php
+config/login_handler.php
+(you need to move your configuration settings into the appropriate files; in most
+cases this will only concern the settings in the config/config.php file)
+
 -> version 2.2
 ==============
 

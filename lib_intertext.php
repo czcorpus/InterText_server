@@ -932,7 +932,7 @@ $table_elements = "CREATE TABLE `{$txtid}_elements` (
   element_name TINYTEXT,
   element_id TINYTEXT,
   attributes TEXT,
-  contents TEXT,
+  contents LONGTEXT,
 
   PRIMARY KEY (id),
   INDEX index_text (txtver_id),

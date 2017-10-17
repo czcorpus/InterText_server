@@ -7,6 +7,7 @@ Improvements:
 - permanent login added (does it really work as expected?) - update of configuration necessary!
 - ignore changes in changelog if current element is marked as deleted and beyond that point in time (element IDs reused by the database may associate changes with wrong elements!)
 - option to export alignments (from CLI) without empty segments
+- allow text segments to be larger than 64kB
 
 Fixes:
 - ensure consistency of editing when someone edits several texts at once

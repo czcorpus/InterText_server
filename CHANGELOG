@@ -11,6 +11,7 @@ Improvements:
 
 Fixes:
 - ensure consistency of editing when someone edits several texts at once
+- fix listing of "all" alignments of one text only and creating new alignments with no selected base version
 
 Release 2.2 (2014-11-10)
 ------------------------

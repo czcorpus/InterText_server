@@ -957,8 +957,31 @@ if ($req=='create' AND $txt!='' AND $PERMISSIONS['newalign']) {
 	<input type="hidden" name="req" value="create" />
 	<input type="hidden" name="action" value="run" />
 	<input type="hidden" name="txt" value="<?php print $txt; ?>" />
-	<input type="hidden" name="ver1" value="<?php print $txtver['id']; ?>" />
+<?php
+	if ($txtver) {
+		print("\t<input type=\"hidden\" name=\"ver1\" value=\"{$txtver['id']}\" />\n");
+	}
+?>
 	<table class="form">
+<?php
+	if (!$txtver) {
+?>
+	<tr>
+		<td><label for="ver1"><strong>Base version:</strong></label></td>
+		<td><select name="ver1">
+<?php
+		foreach ($versions as $version) {
+			if ($version['id']!=$txtver['id'])
+			print "\t\t\t<option value=\"{$version['id']}\">{$version['version_name']}</option>\n";
+			#else print "-".$text['text_id']."-".$txtver['text_id']."- ignored. ";
+		}
+?>
+		</select></td>
+	</tr>
+
+<?php	
+	}
+?>
 	<tr>
 		<td><label for="ver2"><strong>Align to version:</strong></label></td>
 		<td><select name="ver2">
@@ -1058,8 +1081,13 @@ elseif (!$aid) {
 
 	if ($txt!='') {
 		$alignments = $system->get_alignments($txt,$txtver,$instorder.$ALORDER[$alorder], $filter);
-		$txtver = $system->txtver_by_id($txtver);
-		$txtsel = " of '{$txtver['text_name']}.{$txtver['version_name']}'";
+		if ($txtver!=0) {
+			$txtver = $system->txtver_by_id($txtver);
+			$txtsel = " of '{$txtver['text_name']}.{$txtver['version_name']}'";
+		} else {
+			$txtname = $system->textname_by_id($txt);
+			$txtsel = " of '{$txtname}'";
+		}
 		$alllink = "<a href=\"?txt=\">[show all]</a>\n";
 	} else {
 		$alignments = $system->get_alignments_by_uid($uid,$instorder.$ALORDER[$alorder], $filter);
@@ -1079,7 +1107,7 @@ elseif (!$aid) {
 	if ($TXTMGR_URL!='') print "<a href=\"$TXTMGR_URL\">[text manager]</a>\n";
 	print "<a href=\"users.php\" title=\"user management\">[users]</a>";
 	print $alllink;
-	if ($PERMISSIONS['newalign'] && $txt!='') print "<a href=\"$myurl?req=create&amp;txt=$txt&amp;txtver={$txtver['id']}\" title=\"create new alignment\">[new alignment]</a>\n";
+	if ($PERMISSIONS['newalign'] && $txt!='' && $txtver!=0) print "<a href=\"$myurl?req=create&amp;txt=$txt&amp;txtver={$txtver['id']}\" title=\"create new alignment\">[new alignment]</a>\n";
 	print "&nbsp;<span id=\"logout\"><a href=\"help.php#almanager\" title=\"help\" target=\"_blank\">[help]</a><a href=\"?req=logout\">[logout]</a></span>\n";
 	print "</div>\n";
 

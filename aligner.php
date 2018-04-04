@@ -902,7 +902,7 @@ if ($req=='realign' AND $aid>0 AND $PERMISSIONS['realign']) {
 
 # Create new alignment
 if ($req=='create' AND $txt!='' AND $PERMISSIONS['newalign']) {
-	if ($_REQUEST['action']=='run') {
+	if ($_REQUEST['action']=='run' && $_REQUEST["ver1"]!=$_REQUEST["ver2"]) {
 		$process=true;
 		$_SESSION['realign'] = false;
 		$_SESSION['al_ver1'] = preg_replace('/[^0-9]/','',$_REQUEST["ver1"]);
@@ -930,9 +930,13 @@ if ($req=='create' AND $txt!='' AND $PERMISSIONS['newalign']) {
 			include 'progress.php';
 		}
 	}
-	if ($_REQUEST['action']!='run' OR !$process) {
+	if ($_REQUEST['action']!='run' OR !$process OR $_REQUEST["ver1"]==$_REQUEST["ver2"]) {
 			$txtver = $system->txtver_by_id($txtver);
 			$versions = $system->list_versions($txt);
+
+			if ($_REQUEST['action']=='run' && $_REQUEST["ver1"]==$_REQUEST["ver2"]) {
+				$WARNING = 'Please, select two different versions to align!';
+			}
 
 			# Print warning, if there is any
 			if ($WARNING!='') printf(WARNING_FORMAT,$WARNING);
@@ -950,7 +954,17 @@ if ($req=='create' AND $txt!='' AND $PERMISSIONS['newalign']) {
 </div>
 <div id="contents">
 <div id="form-div">
+
+<?php
+	if (!$txtver) {
+		$txtname = $system->textname_by_id($txt);
+		print("<h1>Create new alignment for text '$txtname':</h1>\n");
+	} else {
+?>
 <h1>Create new alignment for text version '<?php print "{$txtver['text_name']}.{$txtver['version_name']}"; ?>':</h1>
+<?php 
+	}
+?>
 <form enctype="multipart/form-data" action="<?php print $myurl; ?>" method="post" onSubmit="this.submit();document.getElementById('form-div').style.display='none'; document.getElementById('info').style.display='block';" class="upload">
 	<fieldset>
 	<input type="hidden" name="MAX_FILE_SIZE" value="102400000" />
@@ -1107,7 +1121,7 @@ elseif (!$aid) {
 	if ($TXTMGR_URL!='') print "<a href=\"$TXTMGR_URL\">[text manager]</a>\n";
 	print "<a href=\"users.php\" title=\"user management\">[users]</a>";
 	print $alllink;
-	if ($PERMISSIONS['newalign'] && $txt!='' && $txtver!=0) print "<a href=\"$myurl?req=create&amp;txt=$txt&amp;txtver={$txtver['id']}\" title=\"create new alignment\">[new alignment]</a>\n";
+	if ($PERMISSIONS['newalign'] && $txt!='') print "<a href=\"$myurl?req=create&amp;txt=$txt&amp;txtver={$txtver['id']}\" title=\"create new alignment\">[new alignment]</a>\n";
 	print "&nbsp;<span id=\"logout\"><a href=\"help.php#almanager\" title=\"help\" target=\"_blank\">[help]</a><a href=\"?req=logout\">[logout]</a></span>\n";
 	print "</div>\n";
 

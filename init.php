@@ -20,7 +20,7 @@
  *
  */
 
-ini_set('error_reporting', 'E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED');
+ini_set('error_reporting', E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED);
 
 # Session initialization
 ini_set('session.gc_maxlifetime', '31104000');

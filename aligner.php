@@ -1522,7 +1522,7 @@ if (!$PERMISSIONS['readonly']) {
 		if ($position==$_SESSION['position']) $class="act";
 		else 
 			if ($position % 2) $class="even"; else $class="odd";
-		if ($_COOKIE['InterText_highlight'] AND (count($row[$v1_id])!=1 OR count($row[$v2_id])!=1)) $class.= "-non11";
+		if ($_COOKIE['InterText_highlight'] AND (!array_key_exists($v1_id,$row) OR !array_key_exists($v2_id,$row) OR count($row[$v1_id])!=1 OR count($row[$v2_id])!=1)) $class.= "-non11";
 		print "<tr class=\"$class\"><td class=\"position\"><a name=\"$position\"></a><a href=\"$myurl?req=setpos&amp;aid=$aid&amp;pos=$position\">$position</a></td>\n";
 		$firstcolumn = TRUE;
 		list($stat1,$mark1,$h1) = halfrow($position,$row,$v1_id);

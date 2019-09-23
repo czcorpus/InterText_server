@@ -1748,12 +1748,6 @@ $( ".editable" ).eip( "aligner.php?req=update_element&amp;aid=<?php print $aid; 
     }
   }
 
-  function filter(caller) {
-    var sw = document.getElementById("filter_switch");
-    if (sw.value==1)
-      caller.form.submit();
-  }
-
 function setCookie(c_name, value, exdays) {
     var exdate = new Date();
     exdate.setDate(exdate.getDate() + exdays);
@@ -1774,16 +1768,25 @@ function getCookie(c_name) {
     return null;
 }
 
+<?php if (!$aid) { ?>
+
 function filterChanged(caller) {
     var val = caller.value;
-    setCookie("InterText_autofilter", val, 30);
+    setCookie("InterText_autofilter", val, <?php print $ctimeout; ?>);
 }
-
+	
+function filter(caller) {
+  var sw = document.getElementById("filter_switch");
+  if (sw.value==1)
+    caller.form.submit();
+}
+	
 window.onload = function(e) {
   var fstate = getCookie("InterText_autofilter");
   if (fstate !== null)
     document.getElementById("filter_switch").value = fstate;
 };
+<?php } ?>
 
 </script>
 </html>

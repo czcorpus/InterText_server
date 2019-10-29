@@ -2447,7 +2447,7 @@ $table_align_changelog = "CREATE TABLE IF NOT EXISTS `{$txt}_align_changelog` (
 	function autoalign_tca2($aid,$profile='',$report=TRUE) {
 		if ($profile=='') $profile='default';
 		if ($report) { print "Process: Initializing TCA2 alignment...\nProgress: 0\n"; flush(); ob_flush(); }
-		$uid = $this->unique_id();
+		$uid = uniqid();
 		$infilename1 = "/tmp/inf1.$uid.xml";
 		$infilename2 = "/tmp/inf2.$uid.xml";
 		$resfilename = "/tmp/alignment.$uid.xml";
@@ -2632,7 +2632,7 @@ $table_align_changelog = "CREATE TABLE IF NOT EXISTS `{$txt}_align_changelog` (
 	function autoalign_hunalign($aid,$profile='',$report=TRUE) {
 		if ($profile=='') $profile='none';
 		if ($report) { print "Process: Preparing HUNALIGN alignment...\nProgress: 0\n"; flush(); ob_flush(); }
-		$uid = $this->unique_id();
+		$uid = uniqid();
 		$infilename1 = "/tmp/inf1.$uid.txt";
 		$infilename2 = "/tmp/inf2.$uid.txt";
 		$resfilename = "/tmp/alignment.$uid.txt";
@@ -2808,25 +2808,6 @@ $table_align_changelog = "CREATE TABLE IF NOT EXISTS `{$txt}_align_changelog` (
 		}
 		return $profiles;
 	}
-
-# Generate unique ID for filenames (from http://www.weberdev.com/get_example-3543.html)
-function unique_id() {
-  // explode the IP of the remote client into four parts
-  $ipbits = explode(".", $_SERVER["REMOTE_ADDR"]);
-  // Get both seconds and microseconds parts of the time
-  list($usec, $sec) = explode(" ",microtime());
-  // Fudge the time we just got to create two 16 bit words
-  $usec = (integer) ($usec * 65536);
-  $sec = ((integer) $sec) & 0xFFFF;
-  // Fun bit - convert the remote client's IP into a 32 bit
-  // hex number then tag on the time.
-  // Result of this operation looks like this xxxxxxxx-xxxx-xxxx
-  $uid = sprintf("%08x-%04x-%04x",($ipbits[0] << 24)
-         | ($ipbits[1] << 16)
-         | ($ipbits[2] << 8)
-         | $ipbits[3], $sec, $usec);
-  return $uid;
-}
 
 	# Shift text (from the given link ID on) to a new position
 	function move_to($txt,$lid,$newpos) {

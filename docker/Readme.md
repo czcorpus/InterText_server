@@ -1,6 +1,6 @@
-# Intertext server docker setup
+# InterText server docker setup
 
-This folder contains a self-maintained Docker setup for the Intertext server. To use the setup you need to first build the *intertext* image using the Dockerfile below and then you can start the service using the provided docker-compose configuration. Of course, this all assumes you have the official docker and docker-compose commands installed on your system.
+This folder contains a self-maintained Docker setup for the InterText server. To use the setup you need to first build the *intertext* image using the Dockerfile below and then you can start the service using the provided docker-compose configuration. Of course, this all assumes you have the official docker and docker-compose commands installed on your system.
 
 ## Dockerfile
 

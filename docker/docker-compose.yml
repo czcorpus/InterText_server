@@ -1,0 +1,28 @@
+version: '3.3'
+
+services:
+   db:
+     image: mysql:5
+     volumes:
+       - db_data:/var/lib/mysql
+       - ./init:/docker-entrypoint-initdb.d
+       - ./mysql_charset.cnf:/etc/mysql/mysql.conf.d/charset.cnf
+     restart: always
+     environment:
+       MYSQL_ROOT_PASSWORD: root
+       MYSQL_DATABASE: intertext
+       MYSQL_USER: intertext
+       MYSQL_PASSWORD: intertext
+
+   www:
+     depends_on:
+       - db
+     image: intertext:latest
+     volumes:
+       - ./config.php:/var/www/html/config/config.php
+       - ./import:/import
+     ports:
+       - "80:80"
+     restart: always
+volumes:
+    db_data: {}

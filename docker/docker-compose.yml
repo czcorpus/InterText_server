@@ -17,7 +17,7 @@ services:
    www:
      depends_on:
        - db
-     image: intertext:latest
+     image: speechclarinpl/intertext
      volumes:
        - ./config.php:/var/www/html/config/config.php
        - ./import:/import

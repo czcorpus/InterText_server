@@ -17,6 +17,8 @@ services:
    www:
      depends_on:
        - db
+     build:
+       context: ./
      image: intertext:latest
      volumes:
        - ./config.php:/var/www/html/config/config.php

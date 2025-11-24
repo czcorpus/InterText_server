@@ -28,7 +28,6 @@ define('WARNING_FORMAT',"<p class=\"warning\">%s</p>");
 require 'init.php';
 require 'lib_intertext.php';
 $system = new InterText;
-
 $batch = array();
 
 if (IsSet($_REQUEST['batch'])) $batch = explode(',', preg_replace('/[^0-9,]/','',$_REQUEST['batch']));
@@ -1064,7 +1063,6 @@ elseif ($req=='alchangelog') {
   print "</div>\n";
 } # end of showing alignment changelog
 elseif (!$aid) {
-
 	# List all alignments if none chosen
 	if ($USER['type']==$USER_ADMIN) $uid=0; else $uid=$USER['id'];
 	$alllink = '';
@@ -1381,7 +1379,8 @@ foreach ($ALSTAT as $key => $value) {
 					$values .= ">$value</option>";
 				}
 			}
-			print "<td><input type=\"hidden\" name=\"id\" value=\"{$al['id']}\"/><select name=\"value\" onChange=\"chAlStat(this);\" id=\"chalstat_{$al['id']}\">$values</select></td>";
+			$title = $USERS[$al['remote_user']]['name'];
+			print "<td><input type=\"hidden\" name=\"id\" value=\"{$al['id']}\"/><select name=\"value\" onChange=\"chAlStat(this);\" id=\"chalstat_{$al['id']}\" title=\"$title\">$values</select></td>";
 		} else {
 			print "<td>".$ALSTAT[$al['status']]."</td>";
 		}

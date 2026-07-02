@@ -44,7 +44,7 @@ class InterText
 	var $auto_status_update = TRUE;
 
 # Initialization (constructor)
-	function InterText () {
+	function __construct() {
 		global $DB_SERVER,$DB_USER,$DB_PASSWORD,$DB_DATABASE,$DISABLE_FULLTEXT;
 		if (!$this->DB = @mysqli_connect($DB_SERVER,$DB_USER,$DB_PASSWORD,$DB_DATABASE))
 			$this->_fail("Cannot connect to database: ".mysqli_error($this->DB));
@@ -1285,7 +1285,9 @@ $table_changelog = "CREATE TABLE `{$txtid}_changelog` (
 			$this->_fail("Cannot access database: ".mysqli_error($this->DB));
 		if (!$dbresult = mysqli_query($this->DB,"DELETE FROM alignments WHERE id='$aid'"))
 			$this->_fail("Cannot access database: ".mysqli_error($this->DB));
-		$dbresult = @mysqli_query($this->DB,"DELETE FROM `{$txt}_align_changelog` WHERE (alignment_id=$aid)");
+		try {
+		    $dbresult = @mysqli_query($this->DB,"DELETE FROM `{$txt}_align_changelog` WHERE (alignment_id=$aid)");
+		} catch (Exception $e) {}
 		return TRUE;
 	}
 
